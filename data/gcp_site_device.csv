@@ -1,0 +1,2 @@
+gcp_site_device_id:r0,gcp_kml_text,gcp_csv_loc,gcp_coordinate_system,gcp_date,site_name,region,site_poly_kml,make,model,serial_number,type
+ef0cb7b4-9f20-4d4e-9b28-a5dea956c4d0,"<Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",computer,4326,2021-07-26,some site,some region,"<Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",HySpex,VNIR-1800,SN00840,imaging spectrometer
