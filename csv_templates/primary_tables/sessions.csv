@@ -1,0 +1,11 @@
+session_name,start_time,end_time,line_count,bad_lines
+
+
+Data Type:
+session_name: TEXT,
+start_time: TIME,
+end_time: TIME,
+line_count: FLOAT,
+bad_lines: TEXT,  Not a required field, can be empty.
+
+All columns are required unless specified otherwise.

@@ -1,0 +1,31 @@
+flight_date,pilot,operator,flight_hours,flight_start_time,flight_end_time,session_name,session_start_time,session_end_time,line_count,bad_lines,site_name,region,site_poly_kml,dsm_name,extent_poly_kml,epsg,vdatum,dsm_file,dsm_metadata
+
+
+Data Types same types as for flights, sessions, study_sites, dsm tables with entries to be connected:
+From flights table --
+flight_date: DATE,
+pilot: TEXT,
+operator: TEXT,
+flight_hours: FLOAT,
+flight_start_time: TIME,
+flight_end_time: TIME,
+From sessions table --
+session_name: TEXT,
+session_start_time: TIME,
+session_end_time: TIME,
+line_count: FLOAT,
+bad_lines: TEXT, Not a required field, can be empty,
+From study_sites table --
+site_name: TEXT,
+region: TEXT, Not a required field, can be empty,
+site_poly_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
+From dsm table --
+dsm_name: TEXT,
+extent_poly_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
+epsg: FLOAT,
+vdatum: TEXT,
+dsm_file: TEXT,
+dsm_metadata: TEXT, Not a required field, can be empty
+
+
+All columns are required unless specified otherwise.

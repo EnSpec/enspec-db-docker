@@ -1,0 +1,27 @@
+project_name,funding_source,project_region,project_poly_kml,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity,activity_description,activity_date_started,activity_date_completed,activity_lead
+
+
+Data Types same as from tables projects, personnel, activity (and the rest belong to this table):
+From projects table --
+project_name: TEXT,
+funding_source: TEXT,
+project_region: TEXT,
+project_poly_kml: TEXT, KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+From personnel table --
+personnel_name: TEXT that is UNIQUE,
+personnel_role: TEXT,
+organization: TEXT,
+office_phone: TEXT,
+cell_phone: TEXT,
+email: TEXT that is UNIQUE,
+personnel_notes: TEXT, Not a required column, can be empty.
+From activity table --
+activity: Uniqe Text
+activity_description: Text
+From this table --
+activity_date_started: DATE,
+activity_date_completed: DATE, Not a required field, can be empty
+activity_lead: TEXT
+
+
+All columns are required unless specified otherwise.

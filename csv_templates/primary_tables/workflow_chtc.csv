@@ -1,0 +1,10 @@
+chtc_batch_name,chtc_process,hypro_version,workflow_version
+
+
+Data Type:
+chtc_batch_name: TEXT,
+chtc_process: TEXT,
+hypro_version: TEXT,
+workflow_version: TEXT
+
+All columns are required unless specified otherwise.

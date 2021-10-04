@@ -1,0 +1,25 @@
+system,software_version,job_type,input_dir,proc_params,image_dir,image_dir_owner,image_exists,processing_date,expiration_date,expiration_type,chtc_batch_name,chtc_process,hypro_version,workflow_version
+
+
+Data Types same as from processing_events, image_output and workflow_chtc:
+From processing_events table --
+system: TEXT,
+software_version: TEXT,
+job_type: TEXT,
+input_dir: TEXT,
+proc_params: TEXT
+From image_output table --
+image_dir: TEXT,
+image_dir_owner: TEXT,
+image_exists: BOOL,
+processing_date: DATE,
+expiration_date: DATE,
+expiration_type: Text, Can be only one from 'reprocess', 'delete', 'glacier storage'
+From image_output table --
+chtc_batch_name: TEXT,
+chtc_process: TEXT,
+hypro_version: TEXT,
+workflow_version: TEXT
+
+
+All columns are required unless specified otherwise.

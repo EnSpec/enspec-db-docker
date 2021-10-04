@@ -1,0 +1,20 @@
+canopy_level,crown_poly_kml,tree_location_kml,variable_name,variable_type,units_name,units_type,units_description,value
+
+
+Data Types from tree_data, variables and units table (except value column):
+From tree_data table --
+canopy_level: Text, Can only be one from 'Canopy(C)', 'Subcanopy(S)', 'Understory(U)', 'Ground'
+crown_poly_kml: TEXT, KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+tree_location_kml: TEXT, KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+From variables table --
+variable_name: TEXT with UNIQUE values,
+variable_type: TEXT, Not a required column, can be empty
+From units table --
+units_name: TEXT,
+units_type: TEXT,
+units_description: TEXT, Not a required column, can be empty
+From this table --
+value: FLOAT
+
+
+All columns are required unless specified otherwise.

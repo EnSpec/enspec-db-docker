@@ -1,0 +1,9 @@
+name,value_ranges,other_details
+
+Data Types:
+name: TEXT,
+value_ranges: TEXT, Not a required field, can be empty
+other_details: TEXT, Not a required field, can be empty
+
+
+All columns are required unless specified otherwise.

@@ -1,0 +1,20 @@
+sample_alive,physical_storage,sample_notes,common_name,family,genus,species,authority,synonym_symbol,subspecies,symbol
+
+
+Data Types from samples and species tables:
+From samples table --
+sample_alive: BOOL,
+physical_storage: Text, Can only be one from 'B4 storage shelves', 'Freezer', 'other_notes'
+sample_notes: TEXT
+From species table --
+common_name: TEXT which is UNIQUE,
+family: TEXT,
+genus: TEXT,
+species: TEXT which is UNIQUE,
+authority: TEXT,
+synonym_symbol: TEXT,
+subspecies: TEXT,
+symbol: TEXT
+
+
+All columns are required unless specified otherwise.

@@ -1,0 +1,9 @@
+install_date,removal_date,dir_location
+
+
+Data Types:
+install_date: DATE,
+removal_date: DATE, Not a required field, can be empty,
+dir_location: TEXT
+
+All columns are required unless specified otherwise.

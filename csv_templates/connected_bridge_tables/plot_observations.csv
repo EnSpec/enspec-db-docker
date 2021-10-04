@@ -1,0 +1,30 @@
+plot_name,plot_type,physiognomic_type,plot_description,veg_coverage,plot_sketch_file,datasheet_scan_file,plot_geom,plot_notes,observation_type,observation_subtype,value_precision,variable_name,variable_type,units_name,units_type,units_description,value
+
+
+Data Types same as tables analysis_plot, observations, variables and units:
+From analysis_plot table --
+plot_name: Text
+plot_type: 'Quadrat' or 'Transect' or 'Tree canopy'
+physiognomic_type: 'Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland'
+plot_description: Text
+veg_coverage: Float
+plot_sketch_file: Text
+datasheet_scan_file: Text
+plot_geom_kml: KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+plot_notes: Text, Not a required field, can be empty.
+From observations table --
+observation_type: TEXT,
+observation_subtype: TEXT, Not a required field, can be empty.
+value_precision: INTEGER
+From variables table --
+variable_name: TEXT with UNIQUE values,
+variable_type: TEXT, Not a required column, can be empty
+From units table --
+units_name: TEXT,
+units_type: TEXT,
+units_description: TEXT, Not a required column, can be empty
+From this table --
+value: Float
+
+
+All columns are required unless specified otherwise.

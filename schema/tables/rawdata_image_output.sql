@@ -22,7 +22,7 @@ CREATE OR REPLACE VIEW rawdata_image_output_view AS
     io.image_exists AS image_exists,
     io.processing_date AS processing_date,
     io.expiration_date AS expiration_date,
-    io.expiration_date AS expiration_type,
+    io.expiration_type AS expiration_type,
 
     sc.name AS source_name
   FROM

@@ -1,0 +1,8 @@
+variable_name,variable_type
+
+
+Data Types:
+variable_name: TEXT with UNIQUE values,
+variable_type: TEXT, Not a required column, can be empty
+
+All columns are required unless specified otherwise.

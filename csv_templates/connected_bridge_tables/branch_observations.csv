@@ -1,0 +1,20 @@
+branch_position,branch_exposure,variable_name,variable_type,units_name,units_type,units_description,value
+
+
+
+Data Types same types as for branch_data, variables and units tables with entries to be connected:
+From branch_data table --
+branch_position: Can only be 'Sun' or 'Shade'
+branch_exposure: Can only be 'Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'
+From variables table --
+variable_name: Text
+variable_type: Text, Not a required column, can be empty
+From units table --
+units_name: Text
+units_type: Text
+units_description: Text, Not a required column, can be empty
+Columns belonging to this table --
+value: Float
+
+
+All columns are required unless specified otherwise.

@@ -1,0 +1,21 @@
+system,software_version,job_type,input_dir,proc_params,variable_name,variable_type,units_name,units_type,units_description
+
+
+Data Types from processing_events, variables and units (except the value column):
+From processing_events table --
+system: TEXT,
+software_version: TEXT,
+job_type: TEXT,
+input_dir: TEXT,
+proc_params: TEXT
+From variables table --
+variable_name: TEXT with UNIQUE values,
+variable_type: TEXT, Not a required column, can be empty
+From units table --
+units_name: TEXT,
+units_type: TEXT,
+units_description: TEXT, Not a required column, can be empty
+value: Float 
+
+
+All columns are required unless specified otherwise.

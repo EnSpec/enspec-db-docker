@@ -1,0 +1,10 @@
+measurement_type,file_location,assay
+
+
+Data Types:
+measurement_type: Text, Can be only one of 'Physical' or 'Chemical'
+file_location: TEXT,
+assay: TEXT
+
+
+All columns are required unless specified otherwise.

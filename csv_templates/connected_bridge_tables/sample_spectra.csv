@@ -1,0 +1,18 @@
+sample_alive,physical_storage,sample_notes,spectrum_type,leaf_number,specdal_version,spectra_group_naming,raw_file_location,processing_spectra_loc
+
+
+Data Types same as from samples and spectra tables:
+From samples table --
+sample_alive: BOOL,
+physical_storage: Text, Can only be one from 'B4 storage shelves', 'Freezer', 'other_notes'
+sample_notes: TEXT
+From spectra table --
+spectrum_type: Text, Can only be 'Fresh' or 'Dry',
+leaf_number: INTEGER,
+specdal_version: TEXT,
+spectra_group_naming: TEXT,
+raw_file_location: TEXT,
+processing_spectra_loc: TEXT
+
+
+All columns are required unless specified otherwise.

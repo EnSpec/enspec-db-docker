@@ -1,0 +1,14 @@
+calibration_date,collection_start_time,collection_stop_time,radiometric_target_center_kml,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc
+
+
+Data Type:
+calibration_date: DATE,
+collection_start_time: TIME,
+collection_stop_time: TIME,
+radiometric_target_center_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
+radiometric_target_poly_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
+raw_file_loc: TEXT,
+processed_spectra_loc: TEXT
+
+
+All columns are required unless specified otherwise.

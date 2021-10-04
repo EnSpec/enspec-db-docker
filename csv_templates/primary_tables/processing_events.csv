@@ -1,0 +1,11 @@
+system,software_version,job_type,input_dir,proc_params
+
+
+Data Types:
+system: TEXT,
+software_version: TEXT,
+job_type: TEXT,
+input_dir: TEXT,
+proc_params: TEXT
+
+All columns are required unless specified otherwise.

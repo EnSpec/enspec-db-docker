@@ -1,0 +1,12 @@
+flight_date,pilot,operator,flight_hours,start_time,end_time
+
+
+Data Types:
+flight_date: DATE,
+pilot: TEXT,
+operator: TEXT,
+flight_hours: FLOAT,
+start_time: TIME,
+end_time: TIME
+
+All columns are required unless specified otherwise.

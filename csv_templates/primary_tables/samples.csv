@@ -1,0 +1,9 @@
+sample_alive,physical_storage,sample_notes
+
+
+Data Types:
+sample_alive: BOOL,
+physical_storage: Text, Can only be one from 'B4 storage shelves', 'Freezer', 'other_notes'
+sample_notes: TEXT
+
+All columns are required unless specified otherwise.

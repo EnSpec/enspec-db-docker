@@ -1,0 +1,25 @@
+session_name,start_time,end_time,line_count,bad_lines,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity_date_started,activity_date_completed,activity_lead
+
+
+Data Types same as from sessions and personnel tables (except last 3 columns):
+From sessions table --
+session_name: TEXT,
+start_time: TIME,
+end_time: TIME,
+line_count: FLOAT,
+bad_lines: TEXT,  Not a required field, can be empty.
+From personnel table --
+personnel_name: TEXT that is UNIQUE,
+personnel_role: TEXT,
+organization: TEXT,
+office_phone: TEXT,
+cell_phone: TEXT,
+email: TEXT that is UNIQUE,
+personnel_notes: TEXT, Not a required column, can be empty.
+From this table --
+activity_date_started: DATE,
+activity_date_completed: DATE, Not a required field, can be empty
+activity_lead: TEXT
+
+
+All columns are required unless specified otherwise.

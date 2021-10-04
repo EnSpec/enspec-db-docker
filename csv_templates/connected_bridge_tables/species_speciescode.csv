@@ -1,0 +1,20 @@
+common_name,family,genus,species,authority,synonym_symbol,subspecies,symbol,cn_number_fia,code_type,custom_code
+
+
+Data Types from species and species_code tables:
+From species table --
+common_name: TEXT which is UNIQUE,
+family: TEXT,
+genus: TEXT,
+species: TEXT which is UNIQUE,
+authority: TEXT,
+synonym_symbol: TEXT,
+subspecies: TEXT,
+symbol: TEXT,
+From species_code table --
+cn_number_fia: TEXT,
+code_type: Text, Can only be 'FIA' or 'Custom',
+custom_code: TEXT
+
+
+All columns are required unless specified otherwise.

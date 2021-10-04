@@ -1,0 +1,8 @@
+aircraft_sign,platform_type
+
+
+Data Types:
+aircraft_sign: TEXT
+platform_type: TEXT
+
+All columns are required unless specified otherwise.

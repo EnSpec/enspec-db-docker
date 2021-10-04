@@ -1,0 +1,20 @@
+plot_name,plot_type,physiognomic_type,plot_description,veg_coverage,plot_sketch_file,datasheet_scan_file,plot_geom_kml,plot_notes,site_name,region,site_poly_kml
+
+
+Data Types same types as for analysis_plot and study_sites tables with entries to be connected:
+From analysis_plot table --
+plot_name: Text
+plot_type: 'Quadrat' or 'Transect' or 'Tree canopy'
+physiognomic_type: 'Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland'
+plot_description: Text
+veg_coverage: Float
+plot_sketch_file: Text
+datasheet_scan_file: Text
+plot_geom_kml: KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+plot_notes: Text, Not a required field, can be empty.
+From study_sites table --
+site_name: Text
+region: Text, Not a required field, can be empty.
+site_poly_kml: Text
+
+All columns are required unless specified otherwise.

@@ -1,0 +1,31 @@
+session_name,start_time,end_time,line_count,bad_lines,make,model,serial_number,type,line_id,line_no,quality,variable_name,variable_type,units_name,units_type,units_description,value
+
+
+Data Types same as from tables sessions, instruments, rawdata, variables, units (except for the value column which belongs to this table):
+From sessions table --
+session_name: TEXT,
+start_time: TIME,
+end_time: TIME,
+line_count: FLOAT,
+bad_lines: TEXT,  Not a required field, can be empty.
+From instruments table --
+make: Text, Can only be one from 'HySpex', 'Headwall', 'Velodyne', 'Ocean Optics', 'Spectra Vista', 'ASD', 'Spectral Evolution', 'iMAR', 'Trimble', 'Emlid', 'Garmin',
+model: Text, Can only be one from 'VNIR-1800', 'SWIR-384', 'Mjolnir VS-620', 'Nano', 'Puck', 'HR-1024i', 'FieldSpec 4', 'PSR+', 'iTraceRT-F400', 'Geo7x', 'RS+',
+serial_number: TEXT that is Unique,
+type: Text, Can only be one from 'GPS', 'imaging spectrometer', 'point spectrometer', 'INS', 'LiDAR'
+From rawdata table --
+line_id: FLOAT,
+line_no: FLOAT,
+quality: Text, can only be 'Green' or 'Yellow' or 'Red'
+From table variables --
+variable_name: TEXT with UNIQUE values,
+variable_type: TEXT, Not a required column, can be empty
+From table units --
+units_name: TEXT,
+units_type: TEXT,
+units_description: TEXT, Not a required column, can be empty
+From this table --
+value: Float
+
+
+All columns are required unless specified otherwise.

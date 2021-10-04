@@ -1,0 +1,22 @@
+session_name,start_time,end_time,line_count,bad_lines,variable_name,variable_type,units_name,units_type,units_description,value
+
+
+Data Types from sessions, variables and units tables (except value column):
+From sessions table --
+session_name: TEXT,
+start_time: TIME,
+end_time: TIME,
+line_count: FLOAT,
+bad_lines: TEXT,  Not a required field, can be empty.
+From variables table --
+variable_name: TEXT with UNIQUE values,
+variable_type: TEXT, Not a required column, can be empty
+From units table --
+units_name: TEXT,
+units_type: TEXT,
+units_description: TEXT, Not a required column, can be empty
+From this table --
+value: FLOAT 
+
+
+All columns are required unless specified otherwise.

@@ -1,0 +1,13 @@
+dsm_name,extent_poly_kml,epsg,vdatum,dsm_file,dsm_metadata
+
+
+Data Types:
+dsm_name: Text
+extent_poly_kml: Text KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+epsg: Float
+vdatum: Text
+dsm_file: Text
+dsm_metadata: Text, Not a required field, can be empty
+
+
+All columns are required unless specified otherwise.

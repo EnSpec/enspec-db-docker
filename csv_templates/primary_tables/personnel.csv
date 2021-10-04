@@ -1,0 +1,13 @@
+personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes
+
+
+Data Types:
+personnel_name: TEXT that is UNIQUE,
+personnel_role: TEXT,
+organization: TEXT,
+office_phone: TEXT,
+cell_phone: TEXT,
+email: TEXT that is UNIQUE,
+personnel_notes: TEXT, Not a required column, can be empty.
+
+All columns are required unless specified otherwise.

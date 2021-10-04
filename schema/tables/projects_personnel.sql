@@ -30,6 +30,7 @@ CREATE OR REPLACE VIEW projects_personnel_view AS
     per.email  as email,
     per.personnel_notes  as personnel_notes,
     ac.activity  as activity,
+    ac.activity_description as activity_description,
     p.activity_date_started  as activity_date_started,
     p.activity_date_completed  as activity_date_completed,
     p.activity_lead  as activity_lead,

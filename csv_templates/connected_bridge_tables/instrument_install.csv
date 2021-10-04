@@ -1,0 +1,19 @@
+make,model,serial_number,type,install_date,removal_date,dir_location,calib_date,calib_facility,calib_technician,calib_file,expiration_date
+
+
+Data Types same as from instruments, installations and calibration tables:
+From instruments table --
+make: Text, Can only be one from 'HySpex', 'Headwall', 'Velodyne', 'Ocean Optics', 'Spectra Vista', 'ASD', 'Spectral Evolution', 'iMAR', 'Trimble', 'Emlid', 'Garmin',
+model: Text, Can only be one from 'VNIR-1800', 'SWIR-384', 'Mjolnir VS-620', 'Nano', 'Puck', 'HR-1024i', 'FieldSpec 4', 'PSR+', 'iTraceRT-F400', 'Geo7x', 'RS+',
+serial_number: TEXT that is Unique,
+type: Text, Can only be one from 'GPS', 'imaging spectrometer', 'point spectrometer', 'INS', 'LiDAR'
+From installations table --
+install_date: DATE,
+removal_date: DATE, Not a required field, can be empty,
+dir_location: TEXT
+From calibration table --
+calib_date: Date
+calib_facility: Text
+calib_technician: Text
+calib_file: Text
+expiration_date: Date
