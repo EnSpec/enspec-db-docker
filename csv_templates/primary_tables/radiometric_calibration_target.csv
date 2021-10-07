@@ -5,8 +5,17 @@ Data Type:
 calibration_date: DATE,
 collection_start_time: TIME,
 collection_stop_time: TIME,
-radiometric_target_center_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
-radiometric_target_poly_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
+rt_center_long: FLOAT,
+rt_center_lat: FLOAT,
+radiometric_target_poly_kml: TEXT KML for example:
+<Polygon> <outerBoundaryIs>  <LinearRing>
+  <coordinates>
+   135.2, 35.4, 0.
+   135.4, 35.6, 0.
+   135.2, 35.6, 0.
+   135.2, 35.4, 0.
+  </coordinates>
+ </LinearRing> </outerBoundaryIs> </Polygon>
 raw_file_loc: TEXT,
 processed_spectra_loc: TEXT
 

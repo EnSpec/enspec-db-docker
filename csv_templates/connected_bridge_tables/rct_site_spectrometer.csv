@@ -1,4 +1,4 @@
-calibration_date,collection_start_time,collection_stop_time,radiometric_target_center_kml,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc,site_name,region,site_poly_kml,make,model,serial_number,type
+calibration_date,collection_start_time,collection_stop_time,rt_center_long,rt_center_lat,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc,site_name,region,site_poly_kml,make,model,serial_number,type
 
 
 
@@ -7,14 +7,23 @@ From radiometric_calibration_target table --
 calibration_date: DATE,
 collection_start_time: TIME,
 collection_stop_time: TIME,
-radiometric_target_center_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
+rt_center_long: FLOAT,
+rt_center_lat: FLOAT,
 radiometric_target_poly_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,
 raw_file_loc: TEXT,
 processed_spectra_loc: TEXT
 From study_sites table --
 site_name: Text
 region: Text, Not a required field, can be empty.
-site_poly_kml: Text KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+site_poly_kml: Text KML for example:
+<Polygon> <outerBoundaryIs>  <LinearRing>
+  <coordinates>
+   135.2, 35.4, 0.
+   135.4, 35.6, 0.
+   135.2, 35.6, 0.
+   135.2, 35.4, 0.
+  </coordinates>
+ </LinearRing> </outerBoundaryIs> </Polygon>
 From instruments table --
 make: Text, Can only be one from 'HySpex', 'Headwall', 'Velodyne', 'Ocean Optics', 'Spectra Vista', 'ASD', 'Spectral Evolution', 'iMAR', 'Trimble', 'Emlid', 'Garmin',
 model: Text, Can only be one from 'VNIR-1800', 'SWIR-384', 'Mjolnir VS-620', 'Nano', 'Puck', 'HR-1024i', 'FieldSpec 4', 'PSR+', 'iTraceRT-F400', 'Geo7x', 'RS+',

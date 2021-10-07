@@ -16,7 +16,8 @@ CREATE INDEX gcp_site_device_device_id_idx ON gcp_site_device(device_id);
 CREATE OR REPLACE VIEW gcp_site_device_view AS
   SELECT
     g.gcp_site_device_id AS gcp_site_device_id,
-    ST_AsKML(gcp.gcp_geom_loc)  as gcp_kml_text,
+    ST_X(gcp.gcp_geom_loc)  as gcp_long,
+    ST_Y(gcp.gcp_geom_loc)  as gcp_lat,
     gcp.gcp_csv_loc  as gcp_csv_loc,
     gcp.gcp_coordinate_system  as gcp_coordinate_system,
     gcp.gcp_date  as gcp_date,
@@ -39,7 +40,8 @@ LEFT JOIN instruments i ON g.device_id = i.instruments_id;
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_gcp_site_device (
   gcp_site_device_id UUID,
-  gcp_kml_text TEXT,
+  gcp_long FLOAT,
+  gcp_lat FLOAT,
   gcp_csv_loc TEXT,
   gcp_coordinate_system INT,
   gcp_date DATE,
@@ -58,7 +60,7 @@ DECLARE
   sid UUID;
   iid UUID;
 BEGIN
-  SELECT get_geometric_calibration_points_id(gcp_kml_text, gcp_csv_loc, gcp_coordinate_system, gcp_date) INTO gcpid;
+  SELECT get_geometric_calibration_points_id(gcp_long, gcp_lat, gcp_csv_loc, gcp_coordinate_system, gcp_date) INTO gcpid;
   SELECT get_study_sites_id(site_name, region, site_poly_kml) INTO sid;
   SELECT get_instruments_id(make, model, serial_number, type) INTO iid;
   IF( gcp_site_device_id IS NULL ) THEN
@@ -79,7 +81,8 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_gcp_site_device (
   gcp_site_device_id_in UUID,
-  gcp_kml_text_in TEXT,
+  gcp_long_in FLOAT,
+  gcp_lat_in FLOAT,
   gcp_csv_loc_in TEXT,
   gcp_coordinate_system_in INT,
   gcp_date_in DATE,
@@ -97,7 +100,7 @@ gcpid UUID;
 sid UUID;
 iid UUID;
 BEGIN
-  SELECT get_geometric_calibration_points_id(gcp_kml_text_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in) INTO gcpid;
+  SELECT get_geometric_calibration_points_id(gcp_long_in, gcp_lat_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in) INTO gcpid;
   SELECT get_study_sites_id(site_name_in, region_in, site_poly_kml_in) INTO sid;
   SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
 
@@ -119,7 +122,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_gcp_site_device(
     gcp_site_device_id := NEW.gcp_site_device_id,
-    gcp_kml_text := NEW.gcp_kml_text,
+    gcp_long := NEW.gcp_long,
+    gcp_lat := NEW.gcp_lat,
     gcp_csv_loc := NEW.gcp_csv_loc,
     gcp_coordinate_system := NEW.gcp_coordinate_system,
     gcp_date := NEW.gcp_date,
@@ -145,7 +149,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_gcp_site_device(
     gcp_site_device_id_in := NEW.gcp_site_device_id,
-    gcp_kml_text_in := NEW.gcp_kml_text,
+    gcp_long_in := NEW.gcp_long,
+    gcp_lat_in := NEW.gcp_lat,
     gcp_csv_loc_in := NEW.gcp_csv_loc,
     gcp_coordinate_system_in := NEW.gcp_coordinate_system,
     gcp_date_in := NEW.gcp_date,
@@ -166,7 +171,8 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_gcp_site_device_id(
-  gcp_kml_text_in TEXT,
+  gcp_long_in FLOAT,
+  gcp_lat_in FLOAT,
   gcp_csv_loc_in TEXT,
   gcp_coordinate_system_in INT,
   gcp_date_in DATE,
@@ -184,7 +190,7 @@ DECLARE
   sid UUID;
   iid UUID;
 BEGIN
-  SELECT get_geometric_calibration_points_id(gcp_kml_text_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in) INTO gcpid;
+  SELECT get_geometric_calibration_points_id(gcp_long_in, gcp_lat_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in) INTO gcpid;
   SELECT get_study_sites_id(site_name_in, region_in, site_poly_kml_in) INTO sid;
   SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
   SELECT
@@ -197,8 +203,8 @@ BEGIN
     device_id = iid;
 
   IF (gid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown gcp_site_device: gcp_kml_text="%" gcp_csv_loc="%" gcp_coordinate_system="%" gcp_date="%" site_name="%" region="%" site_poly_kml="%"
-    serial_number="%"', gcp_kml_text_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in, site_name_in, region_in, site_poly_kml_in, serial_number_in;
+    RAISE EXCEPTION 'Unknown gcp_site_device: gcp_long="%" gcp_lat="%" gcp_csv_loc="%" gcp_coordinate_system="%" gcp_date="%" site_name="%" region="%" site_poly_kml="%"
+    serial_number="%"', gcp_long_in, gcp_lat_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in, site_name_in, region_in, site_poly_kml_in, serial_number_in;
   END IF;
 
   RETURN gid;

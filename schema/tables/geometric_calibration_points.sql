@@ -1,23 +1,25 @@
 -- TABLE
-DROP TABLE IF EXISTS geometric_calibration_points CASCADE;
 DROP FUNCTION update_geometric_calibration_points(uuid,text,text,integer,date);
 DROP FUNCTION get_geometric_calibration_points_id(text,text,integer,date);
+DROP TABLE IF EXISTS geometric_calibration_points CASCADE;
 
 CREATE TABLE geometric_calibration_points (
   geometric_calibration_points_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
-  gcp_geom_loc GEOMETRY NOT NULL,
   gcp_csv_loc TEXT NOT NULL,
   gcp_coordinate_system INT NOT NULL,
-  gcp_date DATE NOT NULL
+  gcp_date DATE NOT NULL,
+  gcp_geom_loc GEOMETRY(POINT,4326)
 );
 CREATE INDEX geometric_calibration_points_source_id_idx ON geometric_calibration_points(source_id);
+-- SELECT AddGeometryColumn('geometric_calibration_points', 'gcp_geom_loc', '4326', 'POINT', 2);
 
 -- VIEW
 CREATE OR REPLACE VIEW geometric_calibration_points_view AS
   SELECT
     g.geometric_calibration_points_id AS geometric_calibration_points_id,
-    ST_AsKML(g.gcp_geom_loc)  as gcp_kml_text,
+    ST_X(g.gcp_geom_loc)  as gcp_long,
+    ST_Y(g.gcp_geom_loc)  as gcp_lat,
     g.gcp_csv_loc  as gcp_csv_loc,
     g.gcp_coordinate_system  as gcp_coordinate_system,
     g.gcp_date  as gcp_date,
@@ -32,7 +34,8 @@ LEFT JOIN source sc ON g.source_id = sc.source_id;
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_geometric_calibration_points (
   geometric_calibration_points_id UUID,
-  gcp_kml_text TEXT,
+  gcp_long FLOAT,
+  gcp_lat FLOAT,
   gcp_csv_loc TEXT,
   gcp_coordinate_system INT,
   gcp_date DATE,
@@ -40,9 +43,9 @@ CREATE OR REPLACE FUNCTION insert_geometric_calibration_points (
   source_name TEXT) RETURNS void AS $$
 DECLARE
   source_id UUID;
-  gcp_kml_to_geom GEOMETRY;
+  gcp_latlong_to_geom GEOMETRY;
 BEGIN
-  SELECT ST_GeomFromKML(gcp_kml_text) INTO gcp_kml_to_geom;
+  SELECT ST_SetSRID(ST_MakePoint(gcp_long, gcp_lat), 4326) INTO gcp_latlong_to_geom;
 
   IF( geometric_calibration_points_id IS NULL ) THEN
     SELECT uuid_generate_v4() INTO geometric_calibration_points_id;
@@ -52,7 +55,7 @@ BEGIN
   INSERT INTO geometric_calibration_points (
     geometric_calibration_points_id, gcp_geom_loc, gcp_csv_loc, gcp_coordinate_system, gcp_date, source_id
   ) VALUES (
-    geometric_calibration_points_id, gcp_kml_to_geom, gcp_csv_loc, gcp_coordinate_system, gcp_date, source_id
+    geometric_calibration_points_id, gcp_latlong_to_geom, gcp_csv_loc, gcp_coordinate_system, gcp_date, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -62,18 +65,19 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_geometric_calibration_points (
   geometric_calibration_points_id_in UUID,
-  gcp_kml_text_in TEXT,
+  gcp_long_in FLOAT,
+  gcp_lat_in FLOAT,
   gcp_csv_loc_in TEXT,
   gcp_coordinate_system_in INT,
   gcp_date_in DATE) RETURNS void AS $$
 DECLARE
-gcp_kml_to_geom GEOMETRY;
+gcp_latlong_to_geom GEOMETRY;
 BEGIN
-  SELECT ST_GeomFromKML(gcp_kml_text_in) INTO gcp_kml_to_geom;
+  SELECT ST_SetSRID(ST_MakePoint(gcp_long_in, gcp_lat_in),4326) INTO gcp_latlong_to_geom;
   UPDATE geometric_calibration_points SET (
     gcp_geom_loc, gcp_csv_loc, gcp_coordinate_system, gcp_date
   ) = (
-    gcp_kml_to_geom, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in
+    gcp_latlong_to_geom, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in
   ) WHERE
     geometric_calibration_points_id = geometric_calibration_points_id_in;
 
@@ -88,7 +92,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_geometric_calibration_points(
     geometric_calibration_points_id := NEW.geometric_calibration_points_id,
-    gcp_kml_text := NEW.gcp_kml_text,
+    gcp_long := NEW.gcp_long,
+    gcp_lat := NEW.gcp_lat,
     gcp_csv_loc := NEW.gcp_csv_loc,
     gcp_coordinate_system := NEW.gcp_coordinate_system,
     gcp_date := NEW.gcp_date,
@@ -107,7 +112,8 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_geometric_calibration_points(
     geometric_calibration_points_id_in := NEW.geometric_calibration_points_id,
-    gcp_kml_text_in := NEW.gcp_kml_text,
+    gcp_long_in := NEW.gcp_long,
+    gcp_lat_in := NEW.gcp_lat,
     gcp_csv_loc_in := NEW.gcp_csv_loc,
     gcp_coordinate_system_in := NEW.gcp_coordinate_system,
     gcp_date_in := NEW.gcp_date
@@ -121,29 +127,30 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_geometric_calibration_points_id(
-  gcp_kml_text_in TEXT,
+  gcp_long_in FLOAT,
+  gcp_lat_in FLOAT,
   gcp_csv_loc_in TEXT,
   gcp_coordinate_system_in INT,
   gcp_date_in DATE
 ) RETURNS UUID AS $$
 DECLARE
   gid UUID;
-  gcp_kml_to_geom GEOMETRY;
+  gcp_latlong_to_geom GEOMETRY;
 BEGIN
-  SELECT ST_GeomFromKML(gcp_kml_text_in) INTO gcp_kml_to_geom;
+  SELECT ST_SetSRID(ST_MakePoint(gcp_long_in, gcp_lat_in), 4326) INTO gcp_latlong_to_geom;
   SELECT
     geometric_calibration_points_id INTO gid
   FROM
     geometric_calibration_points g
   WHERE
-    gcp_geom_loc = gcp_kml_to_geom AND
+    gcp_geom_loc = gcp_latlong_to_geom AND
     gcp_csv_loc = gcp_csv_loc_in AND
     gcp_coordinate_system = gcp_coordinate_system_in AND
     gcp_date = gcp_date_in;
 
   IF (gid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown geometric_calibration_points: gcp_kml_text="%" gcp_csv_loc="%" gcp_coordinate_system="%" gcp_date="%"',
-    gcp_kml_text_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in;
+    RAISE EXCEPTION 'Unknown geometric_calibration_points: gcp_long="%" gcp_lat="%" gcp_csv_loc="%" gcp_coordinate_system="%" gcp_date="%"',
+    gcp_long_in, gcp_lat_in, gcp_csv_loc_in, gcp_coordinate_system_in, gcp_date_in;
   END IF;
 
   RETURN gid;

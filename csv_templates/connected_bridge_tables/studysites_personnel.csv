@@ -4,7 +4,15 @@ Data Types same as from study_sites and personnel tables (except last 3 columns)
 From study_sites table --
 site_name: Text
 region: Text, Not a required field, can be empty.
-site_poly_kml: Text KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
+site_poly_kml: Text KML for example:
+<Polygon> <outerBoundaryIs>  <LinearRing>
+  <coordinates>
+   135.2, 35.4, 0.
+   135.4, 35.6, 0.
+   135.2, 35.6, 0.
+   135.2, 35.4, 0.
+  </coordinates>
+ </LinearRing> </outerBoundaryIs> </Polygon>
 From personnel table --
 personnel_name: TEXT that is UNIQUE,
 personnel_role: TEXT,

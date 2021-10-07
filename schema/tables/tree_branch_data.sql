@@ -15,8 +15,9 @@ CREATE OR REPLACE VIEW tree_branch_data_view AS
   SELECT
     t.tree_branch_data_id AS tree_branch_data_id,
     td.canopy_level  as canopy_level,
-    td.crown_poly  as crown_poly,
-    td.tree_location  as tree_location,
+    ST_AsKML(td.crown_poly)  as crown_poly_kml,
+    ST_X(td.tree_location)  as tree_loc_long,
+    ST_Y(td.tree_location)  as tree_loc_lat,
     b.branch_position  as branch_position,
     b.branch_exposure  as branch_exposure,
 
@@ -31,8 +32,9 @@ LEFT JOIN branch_data b ON t.branch_data_id = b.branch_data_id;
 CREATE OR REPLACE FUNCTION insert_tree_branch_data (
   tree_branch_data_id UUID,
   canopy_level TREE_CANOPY_LEVEL,
-  crown_poly GEOMETRY,
-  tree_location GEOMETRY,
+  crown_poly_kml TEXT,
+  tree_loc_long FLOAT,
+  tree_loc_lat FLOAT,
   branch_position BRANCHPOSITION,
   branch_exposure BRANCHEXPOSURE,
 
@@ -47,7 +49,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO tree_branch_data_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_tree_data_id(canopy_level, crown_poly, tree_location) INTO tdid;
+  SELECT get_tree_data_id(canopy_level, crown_poly_kml, tree_loc_long, tree_loc_lat) INTO tdid;
   SELECT get_branch_data_id(branch_position, branch_exposure) INTO bid;
 
   INSERT INTO tree_branch_data (
@@ -64,8 +66,9 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION update_tree_branch_data (
   tree_branch_data_id_in UUID,
   canopy_level_in TREE_CANOPY_LEVEL,
-  crown_poly_in GEOMETRY,
-  tree_location_in GEOMETRY,
+  crown_poly_kml_in TEXT,
+  tree_loc_long_in FLOAT,
+  tree_loc_lat_in FLOAT,
   branch_position_in BRANCHPOSITION,
   branch_exposure_in BRANCHEXPOSURE
   ) RETURNS void AS $$
@@ -74,7 +77,7 @@ tdid UUID;
 bid UUID;
 
 BEGIN
-  SELECT get_tree_data_id(canopy_level_in, crown_poly_in, tree_location_in) INTO tdid;
+  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in) INTO tdid;
   SELECT get_branch_data_id(branch_position_in, branch_exposure_in) INTO bid;
 
   UPDATE tree_branch_data SET (
@@ -96,8 +99,9 @@ BEGIN
   PERFORM insert_tree_branch_data(
     tree_branch_data_id := NEW.tree_branch_data_id,
     canopy_level := NEW.canopy_level,
-    crown_poly := NEW.crown_poly,
-    tree_location := NEW.tree_location,
+    crown_poly_kml := NEW.crown_poly_kml,
+    tree_loc_long := NEW.tree_loc_long,
+    tree_loc_lat := NEW.tree_loc_lat,
     branch_position := NEW.branch_position,
     branch_exposure := NEW.branch_exposure,
 
@@ -116,8 +120,9 @@ BEGIN
   PERFORM update_tree_branch_data(
     tree_branch_data_id_in := NEW.tree_branch_data_id,
     canopy_level_in := NEW.canopy_level,
-    crown_poly_in := NEW.crown_poly,
-    tree_location_in := NEW.tree_location,
+    crown_poly_kml_in := NEW.crown_poly_kml,
+    tree_loc_long_in := NEW.tree_loc_long,
+    tree_loc_lat_in := NEW.tree_loc_lat,
     branch_position_in := NEW.branch_position,
     branch_exposure_in := NEW.branch_exposure
   );
@@ -130,7 +135,7 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_tree_branch_data_id(
-  canopy_level_in TREE_CANOPY_LEVEL, crown_poly_in geometry, tree_location_in geometry,
+  canopy_level_in TREE_CANOPY_LEVEL, crown_poly_kml_in text, tree_loc_long_in FLOAT, tree_loc_lat_in FLOAT,
   branch_position_in branchposition, branch_exposure_in branchexposure
 ) RETURNS UUID AS $$
 DECLARE
@@ -138,7 +143,7 @@ DECLARE
   tdid UUID;
   bid UUID;
 BEGIN
-  SELECT get_tree_data_id(canopy_level_in, crown_poly_in, tree_location_in) INTO tdid;
+  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in) INTO tdid;
   SELECT get_branch_data_id(branch_position_in, branch_exposure_in) INTO bid;
 
   SELECT
@@ -150,8 +155,8 @@ BEGIN
     branch_data_id = bid;
 
   IF (tid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown tree_branch_data: canopy_level="%" crown_poly="%" tree_location="%" branch_position="%" branch_exposure="%"',
-    canopy_level_in, crown_poly_in, tree_location_in, branch_position_in, branch_exposure_in;
+    RAISE EXCEPTION 'Unknown tree_branch_data: canopy_level="%" crown_poly_kml="%" tree_loc_long="%" tree_loc_lat="%" branch_position="%" branch_exposure="%"',
+    canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in, branch_position_in, branch_exposure_in;
   END IF;
 
   RETURN tid;

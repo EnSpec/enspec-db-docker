@@ -19,7 +19,8 @@ CREATE OR REPLACE VIEW rct_site_spectrometer_view AS
     rct.calibration_date  as calibration_date,
     rct.collection_start_time  as collection_start_time,
     rct.collection_stop_time  as collection_stop_time,
-    ST_AsKML(rct.radiometric_target_center)  as radiometric_target_center_kml,
+    ST_X(rct.radiometric_target_center)  as rt_center_long,
+    ST_Y(rct.radiometric_target_center)  as rt_center_lat,
     ST_AsKML(rct.radiometric_target_poly)  as radiometric_target_poly_kml,
     rct.raw_file_loc  as raw_file_loc,
     rct.processed_spectra_loc  as processed_spectra_loc,
@@ -45,7 +46,8 @@ CREATE OR REPLACE FUNCTION insert_rct_site_spectrometer (
   calibration_date DATE,
   collection_start_time TIME,
   collection_stop_time TIME,
-  radiometric_target_center_kml TEXT,
+  rt_center_long FLOAT,
+  rt_center_lat FLOAT,
   radiometric_target_poly_kml TEXT,
   raw_file_loc TEXT,
   processed_spectra_loc TEXT,
@@ -65,7 +67,7 @@ DECLARE
   iid UUID;
 BEGIN
   SELECT get_radiometric_calibration_target_id(calibration_date, collection_start_time, collection_stop_time,
-    radiometric_target_center_kml, radiometric_target_poly_kml, raw_file_loc, processed_spectra_loc
+    rt_center_long, rt_center_lat, radiometric_target_poly_kml, raw_file_loc, processed_spectra_loc
   ) INTO rctid;
   SELECT get_study_sites_id(site_name, region, site_poly_kml) INTO sid;
   SELECT get_instruments_id(make, model, serial_number, type) INTO iid;
@@ -91,7 +93,8 @@ CREATE OR REPLACE FUNCTION update_rct_site_spectrometer (
   calibration_date_in DATE,
   collection_start_time_in TIME,
   collection_stop_time_in TIME,
-  radiometric_target_center_kml_in TEXT,
+  rt_center_long_in FLOAT,
+  rt_center_lat_in FLOAT,
   radiometric_target_poly_kml_in TEXT,
   raw_file_loc_in TEXT,
   processed_spectra_loc_in TEXT,
@@ -109,7 +112,7 @@ sid UUID;
 iid UUID;
 BEGIN
   SELECT get_radiometric_calibration_target_id(calibration_date_in, collection_start_time_in, collection_stop_time_in,
-    radiometric_target_center_kml_in, radiometric_target_poly_kml_in, raw_file_loc_in, processed_spectra_loc_in
+    rt_center_long_in, rt_center_lat_in, radiometric_target_poly_kml_in, raw_file_loc_in, processed_spectra_loc_in
   ) INTO rctid;
   SELECT get_study_sites_id(site_name_in, region_in, site_poly_kml_in) INTO sid;
   SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
@@ -134,7 +137,8 @@ BEGIN
     calibration_date := NEW.calibration_date,
     collection_start_time := NEW.collection_start_time,
     collection_stop_time := NEW.collection_stop_time,
-    radiometric_target_center_kml := NEW.radiometric_target_center_kml,
+    rt_center_long := NEW.rt_center_long,
+    rt_center_lat := NEW.rt_center_lat,
     radiometric_target_poly_kml := NEW.radiometric_target_poly_kml,
     raw_file_loc := NEW.raw_file_loc,
     processed_spectra_loc := NEW.processed_spectra_loc,
@@ -163,7 +167,8 @@ BEGIN
     calibration_date_in := NEW.calibration_date,
     collection_start_time_in := NEW.collection_start_time,
     collection_stop_time_in := NEW.collection_stop_time,
-    radiometric_target_center_kml_in := NEW.radiometric_target_center_kml,
+    rt_center_long_in := NEW.rt_center_long,
+    rt_center_lat_in := NEW.rt_center_lat,
     radiometric_target_poly_kml_in := NEW.radiometric_target_poly_kml,
     raw_file_loc_in := NEW.raw_file_loc,
     processed_spectra_loc_in := NEW.processed_spectra_loc,
@@ -187,7 +192,8 @@ CREATE OR REPLACE FUNCTION get_rct_site_spectrometer_id(
   calibration_date_in DATE,
   collection_start_time_in TIME,
   collection_stop_time_in TIME,
-  radiometric_target_center_kml_in TEXT,
+  rt_center_long_in FLOAT,
+  rt_center_lat_in FLOAT,
   radiometric_target_poly_kml_in TEXT,
   raw_file_loc_in TEXT,
   processed_spectra_loc_in TEXT,
@@ -205,7 +211,7 @@ DECLARE
   iid UUID;
 BEGIN
   SELECT get_radiometric_calibration_target_id(calibration_date_in, collection_start_time_in, collection_stop_time_in,
-    radiometric_target_center_kml_in, radiometric_target_poly_kml_in, raw_file_loc_in, processed_spectra_loc_in
+    rt_center_long_in, rt_center_lat_in, radiometric_target_poly_kml_in, raw_file_loc_in, processed_spectra_loc_in
   ) INTO rctid;
   SELECT get_study_sites_id(site_name_in, region_in, site_poly_kml_in) INTO sid;
   SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
@@ -219,9 +225,9 @@ BEGIN
     spectrometer_id = iid;
 
   IF (rid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown rct_site_spectrometer: calibration_date="%" collection_start_time="%" collection_stop_time="%" radiometric_target_center_kml="%" radiometric_target_poly_kml="%"
+    RAISE EXCEPTION 'Unknown rct_site_spectrometer: calibration_date="%" collection_start_time="%" collection_stop_time="%" rt_center_long="%" rt_center_lat="%" radiometric_target_poly_kml="%"
     raw_file_loc="%" processed_spectra_loc="%" study_sites: site_name="%" region="%" site_poly_kml="%" serial_number="%"', calibration_date_in, collection_start_time_in, collection_stop_time_in,
-    radiometric_target_center_kml_in, radiometric_target_poly_kml_in, raw_file_loc_in, processed_spectra_loc_in, site_name_in, region_in, site_poly_kml_in, serial_number_in;
+    rt_center_long_in, rt_center_lat_in, radiometric_target_poly_kml_in, raw_file_loc_in, processed_spectra_loc_in, site_name_in, region_in, site_poly_kml_in, serial_number_in;
   END IF;
 
   RETURN rid;

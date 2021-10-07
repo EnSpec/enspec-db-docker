@@ -4,8 +4,8 @@ CREATE TABLE tree_data (
   tree_data_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   canopy_level TREE_CANOPY_LEVEL NOT NULL,
-  crown_poly GEOMETRY NOT NULL,
-  tree_location GEOMETRY NOT NULL
+  crown_poly GEOMETRY(POLYGON, 4326) NOT NULL,
+  tree_location GEOMETRY(POINT, 4326) NOT NULL
 );
 CREATE INDEX tree_data_source_id_idx ON tree_data(source_id);
 
@@ -15,7 +15,8 @@ CREATE OR REPLACE VIEW tree_data_view AS
     t.tree_data_id AS tree_data_id,
     t.canopy_level  as canopy_level,
     ST_AsKML(t.crown_poly)  as crown_poly_kml,
-    ST_AsKML(t.tree_location)  as tree_location_kml,
+    ST_X(t.tree_location)  as tree_loc_long,
+    ST_Y(t.tree_location)  as tree_loc_lat,
 
     sc.name AS source_name
   FROM
@@ -27,7 +28,8 @@ CREATE OR REPLACE FUNCTION insert_tree_data (
   tree_data_id UUID,
   canopy_level TREE_CANOPY_LEVEL,
   crown_poly_kml TEXT,
-  tree_location_kml TEXT,
+  tree_loc_long FLOAT,
+  tree_loc_lat FLOAT,
 
   source_name TEXT) RETURNS void AS $$
 DECLARE
@@ -36,7 +38,7 @@ DECLARE
   tree_location_geom GEOMETRY;
 BEGIN
   SELECT ST_GeomFromKML(crown_poly_kml) INTO crown_poly_geom;
-  SELECT ST_GeomFromKML(tree_location_kml) INTO tree_location_geom;
+  SELECT ST_SetSRID(ST_MakePoint(tree_loc_long, tree_loc_lat), 4326) INTO tree_location_geom;
 
   IF( tree_data_id IS NULL ) THEN
     SELECT uuid_generate_v4() INTO tree_data_id;
@@ -58,13 +60,14 @@ CREATE OR REPLACE FUNCTION update_tree_data (
   tree_data_id_in UUID,
   canopy_level_in TREE_CANOPY_LEVEL,
   crown_poly_kml_in TEXT,
-  tree_location_kml_in TEXT) RETURNS void AS $$
+  tree_loc_long_in FLOAT,
+  tree_loc_lat_in FLOAT) RETURNS void AS $$
 DECLARE
 crown_poly_geom GEOMETRY;
 tree_location_geom GEOMETRY;
 BEGIN
   SELECT ST_GeomFromKML(crown_poly_kml_in) INTO crown_poly_geom;
-  SELECT ST_GeomFromKML(tree_location_kml_in) INTO tree_location_geom;
+  SELECT ST_SetSRID(ST_MakePoint(tree_loc_long_in, tree_loc_lat_in), 4326) INTO tree_location_geom;
 
   UPDATE tree_data SET (
     canopy_level, crown_poly, tree_location
@@ -86,7 +89,8 @@ BEGIN
     tree_data_id := NEW.tree_data_id,
     canopy_level := NEW.canopy_level,
     crown_poly_kml := NEW.crown_poly_kml,
-    tree_location_kml := NEW.tree_location_kml,
+    tree_loc_long := NEW.tree_loc_long,
+    tree_loc_lat := NEW.tree_loc_lat,
 
     source_name := NEW.source_name
   );
@@ -104,7 +108,8 @@ BEGIN
     tree_data_id_in := NEW.tree_data_id,
     canopy_level_in := NEW.canopy_level,
     crown_poly_kml_in := NEW.crown_poly_kml,
-    tree_location_kml_in := NEW.tree_location_kml
+    tree_loc_long_in := NEW.tree_loc_long,
+    tree_loc_lat_in := NEW.tree_loc_lat
   );
   RETURN NEW;
 
@@ -114,14 +119,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_tree_data_id(canopy_level_in TREE_CANOPY_LEVEL, crown_poly_kml_in text, tree_location_kml_in text) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_tree_data_id(canopy_level_in TREE_CANOPY_LEVEL, crown_poly_kml_in text, tree_loc_long_in FLOAT, tree_loc_lat_in FLOAT) RETURNS UUID AS $$
 DECLARE
   tid UUID;
   crown_poly_geom GEOMETRY;
   tree_location_geom GEOMETRY;
 BEGIN
   SELECT ST_GeomFromKML(crown_poly_kml_in) INTO crown_poly_geom;
-  SELECT ST_GeomFromKML(tree_location_kml_in) INTO tree_location_geom;
+  SELECT ST_SetSRID(ST_MakePoint(tree_loc_long_in, tree_loc_lat_in), 4326) INTO tree_location_geom;
   SELECT
     tree_data_id INTO tid
   FROM
@@ -132,7 +137,7 @@ BEGIN
     tree_location = tree_location_geom;
 
   IF (tid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown tree_data: canopy_level="%" crown_poly_kml="%" tree_location_kml="%"', canopy_level_in, crown_poly_kml_in, tree_location_kml_in;
+    RAISE EXCEPTION 'Unknown tree_data: canopy_level="%" crown_poly_kml="%" tree_loc_long="%" tree_loc_lat="%"', canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in;
   END IF;
 
   RETURN tid;

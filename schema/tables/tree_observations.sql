@@ -19,7 +19,8 @@ CREATE OR REPLACE VIEW tree_observations_view AS
     t.tree_observations_id AS tree_observations_id,
     td.canopy_level  as canopy_level,
     ST_AsKML(td.crown_poly)  as crown_poly_kml,
-    ST_AsKML(td.tree_location)  as tree_location_kml,
+    ST_X(td.tree_location)  as tree_loc_long,
+    ST_Y(td.tree_location)  as tree_loc_lat,
     v.variable_name  as variable_name,
     v.variable_type  as variable_type,
     u.units_name  as units_name,
@@ -40,7 +41,8 @@ CREATE OR REPLACE FUNCTION insert_tree_observations (
   tree_observations_id UUID,
   canopy_level TREE_CANOPY_LEVEL,
   crown_poly_kml TEXT,
-  tree_location_kml TEXT,
+  tree_loc_long FLOAT,
+  tree_loc_lat FLOAT,
   variable_name TEXT,
   variable_type TEXT,
   units_name TEXT,
@@ -56,7 +58,7 @@ DECLARE
   uid UUID;
 BEGIN
 
-  SELECT get_tree_data_id(canopy_level, crown_poly_kml, tree_location_kml) INTO tdid;
+  SELECT get_tree_data_id(canopy_level, crown_poly_kml, tree_loc_long, tree_loc_lat) INTO tdid;
   SELECT get_variables_id(variable_name, variable_type) INTO vid;
   SELECT get_units_id(units_name, units_type, units_description) INTO uid;
   IF( tree_observations_id IS NULL ) THEN
@@ -79,7 +81,8 @@ CREATE OR REPLACE FUNCTION update_tree_observations (
   tree_observations_id_in UUID,
   canopy_level_in TREE_CANOPY_LEVEL,
   crown_poly_kml_in TEXT,
-  tree_location_kml_in TEXT,
+  tree_loc_long_in FLOAT,
+  tree_loc_lat_in FLOAT,
   variable_name_in TEXT,
   variable_type_in TEXT,
   units_name_in TEXT,
@@ -92,7 +95,7 @@ vid UUID;
 uid UUID;
 
 BEGIN
-  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_location_kml_in) INTO tdid;
+  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in) INTO tdid;
   SELECT get_variables_id(variable_name_in, variable_type_in) INTO vid;
   SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO uid;
   UPDATE tree_observations SET (
@@ -115,7 +118,8 @@ BEGIN
     tree_observations_id := NEW.tree_observations_id,
     canopy_level := NEW.canopy_level,
     crown_poly_kml := NEW.crown_poly_kml,
-    tree_location_kml := NEW.tree_location_kml,
+    tree_loc_long := NEW.tree_loc_long,
+    tree_loc_lat := NEW.tree_loc_lat,
     variable_name := NEW.variable_name,
     variable_type := NEW.variable_type,
     units_name := NEW.units_name,
@@ -139,7 +143,8 @@ BEGIN
     tree_observations_id_in := NEW.tree_observations_id,
     canopy_level_in := NEW.canopy_level,
     crown_poly_kml_in := NEW.crown_poly_kml,
-    tree_location_kml_in := NEW.tree_location_kml,
+    tree_loc_long_in := NEW.tree_loc_long,
+    tree_loc_lat_in := NEW.tree_loc_lat,
     variable_name_in := NEW.variable_name,
     variable_type_in := NEW.variable_type,
     units_name_in := NEW.units_name,
@@ -158,7 +163,8 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE FUNCTION get_tree_observations_id(
   canopy_level_in TREE_CANOPY_LEVEL,
   crown_poly_kml_in TEXT,
-  tree_location_kml_in TEXT,
+  tree_loc_long_in FLOAT,
+  tree_loc_lat_in FLOAT,
   variable_name_in text,
   variable_type_in text,
   units_name_in text,
@@ -173,7 +179,7 @@ DECLARE
   uid UUID;
 BEGIN
 
-  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_location_kml_in) INTO tdid;
+  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in) INTO tdid;
   SELECT get_variables_id(variable_name_in, variable_type_in) INTO vid;
   SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO uid;
   SELECT
@@ -187,9 +193,9 @@ BEGIN
     value = value_in;
 
   IF (tid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown tree_observations: canopy_level="%" crown_poly_kml="%" tree_location_kml="%"
+    RAISE EXCEPTION 'Unknown tree_observations: canopy_level="%" crown_poly_kml="%" tree_loc_long="%" tree_loc_lat="%"
     variable_name="%" variable_type="%" units_name="%" units_type="%" units_description="%" value="%"',
-    canopy_level_in, crown_poly_kml_in, tree_location_kml_in, variable_name_in, variable_type_in,
+    canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in, variable_name_in, variable_type_in,
     units_name_in, units_type_in, units_description_in, value_in;
   END IF;
 

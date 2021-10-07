@@ -5,7 +5,7 @@ CREATE TABLE study_sites (
   source_id UUID REFERENCES source NOT NULL,
   site_name TEXT NOT NULL,
   region TEXT,
-  site_poly GEOMETRY NOT NULL,
+  site_poly GEOMETRY(POLYGON, 4326) NOT NULL,
   UNIQUE(site_name, region)
 );
 CREATE INDEX study_sites_source_id_idx ON study_sites(source_id);
@@ -113,7 +113,7 @@ DECLARE
   site_kml_to_geom GEOMETRY;
 BEGIN
   SELECT ST_GeomFromKML(site_poly_kml_in) INTO site_kml_to_geom;
-  IF region is NULL THEN
+  IF (region_in is NULL) THEN
     SELECT
       study_sites_id INTO sid
     FROM

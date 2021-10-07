@@ -25,7 +25,8 @@ CREATE OR REPLACE VIEW plot_tree_data_view AS
     a.plot_notes  as plot_notes,
     t.canopy_level  as canopy_level,
     ST_AsKML(t.crown_poly)  as crown_poly_kml,
-    ST_AsKML(t.tree_location)  as tree_location_kml,
+    ST_X(t.tree_location)  as tree_loc_long,
+    ST_Y(t.tree_location)  as tree_loc_lat,
 
     sc.name AS source_name
   FROM
@@ -48,7 +49,8 @@ CREATE OR REPLACE FUNCTION insert_plot_tree_data (
   plot_notes TEXT,
   canopy_level TREE_CANOPY_LEVEL,
   crown_poly_kml TEXT,
-  tree_location_kml TEXT,
+  tree_loc_long FLOAT,
+  tree_loc_lat FLOAT,
 
   source_name TEXT) RETURNS void AS $$
 DECLARE
@@ -57,7 +59,7 @@ DECLARE
   tid UUID;
 BEGIN
   SELECT get_analysis_plot_id(plot_name, plot_type, physiognomic_type, plot_description, veg_coverage, plot_sketch_file, datasheet_scan_file, plot_geom_kml, plot_notes) INTO aid;
-  SELECT get_tree_data_id(canopy_level, crown_poly_kml, tree_location_kml) INTO tid;
+  SELECT get_tree_data_id(canopy_level, crown_poly_kml, tree_loc_long, tree_loc_lat) INTO tid;
 
   IF( plot_tree_data_id IS NULL ) THEN
     SELECT uuid_generate_v4() INTO plot_tree_data_id;
@@ -88,7 +90,8 @@ CREATE OR REPLACE FUNCTION update_plot_tree_data (
   plot_notes_in TEXT,
   canopy_level_in TREE_CANOPY_LEVEL,
   crown_poly_kml_in TEXT,
-  tree_location_kml_in TEXT
+  tree_loc_long_in FLOAT,
+  tree_loc_lat_in FLOAT
   ) RETURNS void AS $$
 DECLARE
 aid UUID;
@@ -96,7 +99,7 @@ tid UUID;
 
 BEGIN
   SELECT get_analysis_plot_id(plot_name_in, plot_type_in, physiognomic_type_in, plot_description_in, veg_coverage_in, plot_sketch_file_in, datasheet_scan_file_in, plot_geom_kml_in, plot_notes_in) INTO aid;
-  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_location_kml_in) INTO tid;
+  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in) INTO tid;
 
   UPDATE plot_tree_data SET (
     analysis_plot_id, tree_data_id
@@ -127,7 +130,8 @@ BEGIN
     plot_notes := NEW.plot_notes,
     canopy_level := NEW.canopy_level,
     crown_poly_kml := NEW.crown_poly_kml,
-    tree_location_kml := NEW.tree_location_kml,
+    tree_loc_long := NEW.tree_loc_long,
+    tree_loc_lat := NEW.tree_loc_lat,
 
     source_name := NEW.source_name
   );
@@ -154,7 +158,8 @@ BEGIN
     plot_notes_in := NEW.plot_notes,
     canopy_level_in := NEW.canopy_level,
     crown_poly_kml_in := NEW.crown_poly_kml,
-    tree_location_kml_in := NEW.tree_location_kml
+    tree_loc_long_in := NEW.tree_loc_long,
+    tree_loc_lat_in := NEW.tree_loc_lat
   );
   RETURN NEW;
 
@@ -176,7 +181,8 @@ CREATE OR REPLACE FUNCTION get_plot_tree_data_id(
   plot_notes_in TEXT,
   canopy_level_in TREE_CANOPY_LEVEL,
   crown_poly_kml_in TEXT,
-  tree_location_kml_in TEXT
+  tree_loc_long_in FLOAT,
+  tree_loc_lat_in FLOAT
 ) RETURNS UUID AS $$
 DECLARE
   pid UUID;
@@ -184,7 +190,7 @@ DECLARE
   tid UUID;
 BEGIN
   SELECT get_analysis_plot_id(plot_name_in, plot_type_in, physiognomic_type_in, plot_description_in, veg_coverage_in, plot_sketch_file_in, datasheet_scan_file_in, plot_geom_kml_in, plot_notes_in) INTO aid;
-  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_location_kml_in) INTO tid;
+  SELECT get_tree_data_id(canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in) INTO tid;
 
   SELECT
     plot_tree_data_id INTO pid
@@ -197,8 +203,9 @@ BEGIN
   IF (pid IS NULL) THEN
     RAISE EXCEPTION 'Unknown plot_tree_data: plot_name="%" plot_type="%" physiognomic_type="%"
     plot_description="%" veg_coverage="%" plot_sketch_file="%" datasheet_scan_file="%" plot_geom_kml="%" plot_notes="%"
-    canopy_level="%" crown_poly_kml="%" tree_location_kml="%"', plot_name_in, plot_type_in, physiognomic_type_in, plot_description_in, veg_coverage_in, plot_sketch_file_in,
-    datasheet_scan_file_in, plot_geom_kml_in, plot_notes_in, canopy_level_in, crown_poly_kml_in, tree_location_kml_in;
+    canopy_level="%" crown_poly_kml="%" tree_loc_long="%" tree_loc_lat="%"', plot_name_in, plot_type_in, physiognomic_type_in,
+    plot_description_in, veg_coverage_in, plot_sketch_file_in, datasheet_scan_file_in, plot_geom_kml_in, plot_notes_in,
+    canopy_level_in, crown_poly_kml_in, tree_loc_long_in, tree_loc_lat_in;
   END IF;
 
   RETURN pid;

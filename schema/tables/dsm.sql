@@ -4,7 +4,7 @@ CREATE TABLE dsm (
   dsm_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   dsm_name TEXT UNIQUE NOT NULL,
-  extent_poly GEOMETRY NOT NULL,
+  extent_poly GEOMETRY(POLYGON, 4326) NOT NULL,
   epsg FLOAT NOT NULL,
   vdatum TEXT NOT NULL,
   dsm_file TEXT NOT NULL,

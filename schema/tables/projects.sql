@@ -6,7 +6,7 @@ CREATE TABLE projects (
   project_name TEXT NOT NULL,
   funding_source TEXT NOT NULL,
   project_region TEXT NOT NULL,
-  project_poly GEOMETRY NOT NULL
+  project_poly GEOMETRY(POLYGON, 4326) NOT NULL
 );
 CREATE INDEX projects_source_id_idx ON projects(source_id);
 
