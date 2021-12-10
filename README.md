@@ -1,4 +1,5 @@
 # UW EnSpec Database
+![Abstracted Database Diagram](images/DatabaseAbstraction.png)
 `enspec-db-docker` is a docker container example to create database skeleton of the tables used in EnSpec lab
 Instructions below show how to set up the docker and ways to interact with it.
 
@@ -38,8 +39,8 @@ There are two ways to populate the tables:
 1. Bulk upload using PGDM tools OR using SQL queries
 2. Use PGDM-UI and upload csv or excel files
 
-Order in which data is to be uploaded is to populate the primary tables first and then connect information across primary tables using connected/bridge tables.
-Templates for the tables are provided in csv_templates folder. They can be used for populating using the UI or just for quick look at the column names.
+In order to populate the database, upload the primary tables first and then connect information across primary tables using connected/bridge tables.
+Templates for the tables are provided in `csv_templates` folder. They can be used for populating using the UI or just for quick look at the column names.
 
 If populating the database using PGDM UI, here is a quick look at the UI:
 
@@ -53,6 +54,3 @@ If populating the database using PGDM UI, here is a quick look at the UI:
 ![Upload to tables using excel files](images/db_connected_ui.png)
 
 You can download the versioned tables after successful upload.
-
-## Overview Diagram
-![Abstracted Database Diagram](images/DatabaseAbstraction.png)
