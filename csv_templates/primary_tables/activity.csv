@@ -1,7 +1,2 @@
 activity,activity_description
-
-Data Types:
-activity: Uniqe Text
-activity_description: Text
-
-All columns are required unless specified otherwise.
+Unique Text,Text

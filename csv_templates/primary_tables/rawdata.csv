@@ -1,9 +1,2 @@
 line_id,line_no,quality
-
-
-Data Types:
-line_id: FLOAT,
-line_no: FLOAT,
-quality: Text, can only be 'Green' or 'Yellow' or 'Red'
-
-All columns are required unless specified otherwise.
+FLOAT,FLOAT,'Green' or 'Yellow' or 'Red'

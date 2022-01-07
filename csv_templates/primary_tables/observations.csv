@@ -1,9 +1,2 @@
 observation_type,observation_subtype,value_precision
-
-
-Data Types:
-observation_type: TEXT,
-observation_subtype: TEXT, Not a required field, can be empty.
-value_precision: INTEGER
-
-All columns are required unless specified otherwise.
+TEXT,TEXT (can be empty),INTEGER

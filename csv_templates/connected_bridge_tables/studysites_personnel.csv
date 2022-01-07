@@ -1,10 +1,5 @@
 site_name,region,site_poly_kml,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity_date_started,activity_date_completed,activity_lead
-
-Data Types same as from study_sites and personnel tables (except last 3 columns):
-From study_sites table --
-site_name: Text
-region: Text, Not a required field, can be empty.
-site_poly_kml: Text KML for example:
+Text,Text (can be empty),Text KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -12,19 +7,4 @@ site_poly_kml: Text KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>
-From personnel table --
-personnel_name: TEXT that is UNIQUE,
-personnel_role: TEXT,
-organization: TEXT,
-office_phone: TEXT,
-cell_phone: TEXT,
-email: TEXT that is UNIQUE,
-personnel_notes: TEXT, Not a required column, can be empty.
-From this table --
-activity_date_started: DATE,
-activity_date_completed: DATE, Not a required field, can be empty
-activity_lead: TEXT
-
-
-All columns are required unless specified otherwise.
+ </LinearRing> </outerBoundaryIs> </Polygon>,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),DATE,DATE (can be empty),TEXT

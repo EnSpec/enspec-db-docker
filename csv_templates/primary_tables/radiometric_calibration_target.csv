@@ -1,13 +1,5 @@
 calibration_date,collection_start_time,collection_stop_time,radiometric_target_center_kml,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc
-
-
-Data Type:
-calibration_date: DATE,
-collection_start_time: TIME,
-collection_stop_time: TIME,
-rt_center_long: FLOAT,
-rt_center_lat: FLOAT,
-radiometric_target_poly_kml: TEXT KML for example:
+DATE,TIME,TIME,FLOAT,FLOAT,TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -15,9 +7,4 @@ radiometric_target_poly_kml: TEXT KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>
-raw_file_loc: TEXT,
-processed_spectra_loc: TEXT
-
-
-All columns are required unless specified otherwise.
+ </LinearRing> </outerBoundaryIs> </Polygon>,TEXT,TEXT

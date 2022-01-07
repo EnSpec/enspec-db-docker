@@ -1,26 +1,2 @@
 sample_alive,physical_storage,sample_notes,lab_name,measurement_type,file_location,assay,variable_name,variable_type,units_name,units_type,units_description, value
-
-
-Data Types from samples, labs, measurements, variables, units tables (except for the value column):
-From samples table --
-sample_alive: BOOL,
-physical_storage: Text, Can only be one from 'B4 storage shelves', 'Freezer', 'other_notes'
-sample_notes: TEXT
-From labs table --
-lab_name: TEXT that is UNIQUE, Required field
-From measurements table --
-measurement_type: Text, Can be only one of 'Physical' or 'Chemical'
-file_location: TEXT,
-assay: TEXT
-From variables table --
-variable_name: TEXT with UNIQUE values,
-variable_type: TEXT, Not a required column, can be empty
-From units table --
-units_name: TEXT,
-units_type: TEXT,
-units_description: TEXT, Not a required column, can be empty
-From this table --
-value: FLOAT
-
-
-All columns are required unless specified otherwise.
+BOOL,'B4 storage shelves' or 'Freezer' or 'other_notes',TEXT,UNIQUE TEXT,'Physical' or 'Chemical',TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,TEXT (can be empty),FLOAT

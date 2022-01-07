@@ -1,5 +1,2 @@
 lab_name
-
-
-Data Type:
-lab_name: TEXT that is UNIQUE, Required field
+UNIQUE TEXT

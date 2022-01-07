@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # Never run this unless you mean to.
-# exit -1; -- Uncomment after database has data in it
+exit -1; #-- Uncomment after database has data in it
 
 # Note: extentions may need to be added by IT admin
 SCHEMA=enspec;

@@ -1,11 +1,2 @@
 calib_date,calib_facility,calib_technician,calib_file,expiration_date
-
-
-Data Types:
-calib_date: Date
-calib_facility: Text
-calib_technician: Text
-calib_file: Text
-expiration_date: Date
-
-All columns are required unless specified otherwise.
+Date,Text,Text,Text,Date

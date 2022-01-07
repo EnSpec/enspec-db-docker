@@ -1,17 +1,2 @@
 flight_date,pilot,operator,flight_hours,start_time,end_time,install_date,removal_date,dir_location
-
-
-Data Types same types as for flights and installations tables with entries to be connected:
-From flights table --
-flight_date: DATE,
-pilot: TEXT,
-operator: TEXT,
-flight_hours: FLOAT,
-start_time: TIME,
-end_time: TIME,
-From installations table --
-install_date: DATE,
-removal_date: DATE, Not a required field, can be empty,
-dir_location: TEXT,
-
-All columns are required unless specified otherwise.
+DATE,TEXT,TEXT,FLOAT,TIME,TIME,DATE,DATE (can be empty),TEXT

@@ -1,8 +1,2 @@
 branch_position,branch_exposure
-
-
-Data Types:
-branch_position: Can only be 'Sun' or 'Shade'
-branch_exposure: Can only be 'Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'
-
-All columns are required unless specified otherwise.
+'Sun' or 'Shade','Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'

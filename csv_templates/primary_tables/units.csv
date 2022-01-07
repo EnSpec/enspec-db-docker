@@ -1,9 +1,2 @@
 units_name,units_type,units_description
-
-
-Data Types:
-units_name: TEXT,
-units_type: TEXT,
-units_description: TEXT, Not a required column, can be empty
-
-All columns are required unless specified otherwise.
+TEXT,TEXT,TEXT(can be empty)

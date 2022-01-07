@@ -1,10 +1,2 @@
 cn_number_fia,code_type,custom_code
-
-
-Data Types:
-cn_number_fia: TEXT,
-code_type: Text, Can only be 'FIA' or 'Custom',
-custom_code: TEXT
-
-
-All columns are required unless specified otherwise.
+TEXT,'FIA' or 'Custom',TEXT

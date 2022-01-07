@@ -1,0 +1,3 @@
+In order to populate the database, first the primary tables need to be populated. The information across primary tables is connected using connected/bridge tables. Templates for the tables are provided in csv_templates folder. The first row of the template has the headers/column names for table and the second row specifies the data type expected for the columns.  The data types are only for reference and should be deleted before using the template to populate data. PGDM-UI can be used to upload csv/excel files or just for quick look at the column names.
+
+All columns are required unless specified otherwise.

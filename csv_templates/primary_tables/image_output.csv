@@ -1,13 +1,2 @@
 image_dir,image_dir_owner,image_exists,processing_date,expiration_date,expiration_type
-
-
-Data Types:
-image_dir: TEXT,
-image_dir_owner: TEXT,
-image_exists: BOOL,
-processing_date: DATE,
-expiration_date: DATE,
-expiration_type: Text, Can be only one from 'reprocess', 'delete', 'glacier storage'
-
-
-All columns are required unless specified otherwise.
+TEXT,TEXT,BOOL,DATE,DATE,'reprocess' or 'delete' or 'glacier storage'

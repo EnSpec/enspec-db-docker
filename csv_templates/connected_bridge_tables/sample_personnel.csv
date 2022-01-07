@@ -1,23 +1,2 @@
 sample_alive,physical_storage,sample_notes,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity_date_started,activity_date_completed,activity_lead
-
-
-Data Types same as from samples and personnel tables (except last 3 columns):
-From samples table --
-sample_alive: BOOL,
-physical_storage: Text, Can only be one from 'B4 storage shelves', 'Freezer', 'other_notes'
-sample_notes: TEXT
-From personnel table --
-personnel_name: TEXT that is UNIQUE,
-personnel_role: TEXT,
-organization: TEXT,
-office_phone: TEXT,
-cell_phone: TEXT,
-email: TEXT that is UNIQUE,
-personnel_notes: TEXT, Not a required column, can be empty.
-From this table --
-activity_date_started: DATE,
-activity_date_completed: DATE, Not a required field, can be empty
-activity_lead: TEXT
-
-
-All columns are required unless specified otherwise.
+BOOL,'B4 storage shelves' or 'Freezer' or 'other_notes',TEXT,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),DATE,DATE (can be empty),TEXT

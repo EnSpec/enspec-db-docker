@@ -1,10 +1,5 @@
 canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat,common_name,family,genus,species,authority,synonym_symbol,subspecies,symbol
-
-
-Data Types same as from tree_data and species table:
-From tree_data table --
-canopy_level: Text, Can only be one from 'Canopy(C)', 'Subcanopy(S)', 'Understory(U)', 'Ground'
-crown_poly_kml: TEXT, KML for example:
+'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -12,18 +7,4 @@ crown_poly_kml: TEXT, KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>
-tree_loc_long: FLOAT
-tree_loc_lat: FLOAT
-From species table --
-common_name: TEXT which is UNIQUE,
-family: TEXT,
-genus: TEXT,
-species: TEXT which is UNIQUE,
-authority: TEXT,
-synonym_symbol: TEXT,
-subspecies: TEXT,
-symbol: TEXT
-
-
-All columns are required unless specified otherwise.
+ </LinearRing> </outerBoundaryIs> </Polygon>,FLOAT,FLOAT,UNIQUE TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT

@@ -1,12 +1,2 @@
 calculation_method,roll_offset,pitch_offset,heading_offset,rmse,gcp_file
-
-
-Data Types:
-calculation_method: Text
-roll_offset: Float
-pitch_offset: Float
-heading_offset: Float
-rmse: Float
-gcp_file: Text
-
-All columns are required unless specified otherwise.
+Text,Float,Float,Float,Float,Text

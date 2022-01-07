@@ -1,21 +1,2 @@
 plot_name,plot_type,physiognomic_type,plot_description,veg_coverage,plot_sketch_file,datasheet_scan_file,plot_geom,plot_notes,quadrat_name,sampled,sampling_method,quadrat_geom_kml
-
-
-Data Types same as tables analysis_plot and quadrats:
-From table analysis_plot --
-plot_name: Text
-plot_type: 'Quadrat' or 'Transect' or 'Tree canopy'
-physiognomic_type: 'Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland'
-plot_description: Text
-veg_coverage: Float
-plot_sketch_file: Text
-datasheet_scan_file: Text
-plot_geom_kml: KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
-plot_notes: Text, Not a required field, can be empty.
-From table quadrats --
-quadrat_name: TEXT,
-sampled: BOOL,
-sampling_method: TEXT,
-quadrat_geom_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
-
-All columns are required unless specified otherwise.
+Text,'Quadrat' or 'Transect' or 'Tree canopy','Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland',Text,Float,Text,Text,KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,Text (can be empty),TEXT,BOOL,TEXT,TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>

@@ -1,13 +1,2 @@
 branch_position,branch_exposure,sample_alive,physical_storage,sample_notes
-
-
-Data Types same types as for branch_data and samples tables with entries to be connected:
-From branch_data table --
-branch_position: Can only be 'Sun' or 'Shade'
-branch_exposure: Can only be 'Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'
-From samples table --
-sample_alive: Bool
-physical_storage: Can only be 'B4 storage shelves' or 'Freezer' or 'other_notes'
-sample_notes: Text
-
-All columns are required unless specified otherwise.
+'Sun' or 'Shade','Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)',Bool,'B4 storage shelves' or 'Freezer' or 'other_notes',Text

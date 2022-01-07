@@ -1,15 +1,2 @@
 common_name,family,genus,species,authority,synonym_symbol,subspecies,symbol
-
-
-Data Types:
-common_name: TEXT which is UNIQUE,
-family: TEXT,
-genus: TEXT,
-species: TEXT which is UNIQUE,
-authority: TEXT,
-synonym_symbol: TEXT,
-subspecies: TEXT,
-symbol: TEXT,
-
-
-All columns are required unless specified otherwise.
+UNIQUE TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT

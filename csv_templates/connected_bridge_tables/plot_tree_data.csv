@@ -1,21 +1,6 @@
 plot_name,plot_type,physiognomic_type,plot_description,veg_coverage,plot_sketch_file,datasheet_scan_file,plot_geom,plot_notes,canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat
-
-
-
-Data types same as from analysis_plot and tree_data tables:
-From analysis_plot table --
-plot_name: Text
-plot_type: 'Quadrat' or 'Transect' or 'Tree canopy'
-physiognomic_type: 'Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland'
-plot_description: Text
-veg_coverage: Float
-plot_sketch_file: Text
-datasheet_scan_file: Text
-plot_geom_kml: KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
-plot_notes: Text, Not a required field, can be empty.
-From tree_data table --
-canopy_level: Text, Can only be one from 'Canopy(C)', 'Subcanopy(S)', 'Understory(U)', 'Ground'
-crown_poly_kml: TEXT, KML for example:
+Text,'Quadrat' or 'Transect' or 'Tree canopy','Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland',Text,Float,Text,Text,KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,Text (can be empty),'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',
+TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -23,9 +8,4 @@ crown_poly_kml: TEXT, KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>
-tree_loc_long: FLOAT,
-tree_loc_lat: FLOAT
-
-
-All columns are required unless specified otherwise.
+ </LinearRing> </outerBoundaryIs> </Polygon>,FLOAT,FLOAT

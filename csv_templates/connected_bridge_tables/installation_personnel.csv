@@ -1,26 +1,2 @@
 install_date,removal_date,dir_location,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity,activity_description,activity_date_started,activity_date_completed,activity_lead
-
-
-Data Types same as from tables installations, activity and personnel. Rest of the fields belong to this table:
-From installations table --
-install_date: DATE,
-removal_date: DATE, Not a required field, can be empty,
-dir_location: TEXT
-From personnel table --
-personnel_name: TEXT that is UNIQUE,
-personnel_role: TEXT,
-organization: TEXT,
-office_phone: TEXT,
-cell_phone: TEXT,
-email: TEXT that is UNIQUE,
-personnel_notes: TEXT, Not a required column, can be empty.
-From activity table --
-activity: TEXT,
-activity_description: TEXT,
-Fields belonging to this table --
-activity_date_started: DATE,
-activity_date_completed: DATE, Not a required column, can be empty.
-activity_lead: TEXT,
-
-
-All columns are required unless specified otherwise.
+DATE,DATE (can be empty),TEXT,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,DATE,DATE (can be empty),TEXT

@@ -1,17 +1,6 @@
 gcp_long,gcp_lat,gcp_csv_loc,gcp_coordinate_system,gcp_date,site_name,region,site_poly_kml,make,model,serial_number,type
-
-
-Data Types same types as for gcp, study_sites and instruments tables with entries to be connected:
-From gcp table --
-gcp_long: FLOAT,
-gcp_lat: FLOAT,
-gcp_csv_loc: TEXT,
-gcp_coordinate_system: INT,
-gcp_date: DATE,
-From study_sites table --
-site_name: TEXT,
-region: TEXT, Not a required field, can be empty.
-site_poly_kml: Text, KML for example: 
+FLOAT,FLOAT,TEXT,INT,DATE,TEXT,TEXT (can be empty)
+Text KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -19,12 +8,4 @@ site_poly_kml: Text, KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,
-From instruments table --
-make: Text, Can only be one from 'HySpex', 'Headwall', 'Velodyne', 'Ocean Optics', 'Spectra Vista', 'ASD', 'Spectral Evolution', 'iMAR', 'Trimble', 'Emlid', 'Garmin',
-model: Text, Can only be one from 'VNIR-1800', 'SWIR-384', 'Mjolnir VS-620', 'Nano', 'Puck', 'HR-1024i', 'FieldSpec 4', 'PSR+', 'iTraceRT-F400', 'Geo7x', 'RS+',
-serial_number: TEXT,
-type: Text, Can only be one from 'GPS', 'imaging spectrometer', 'point spectrometer', 'INS', 'LiDAR'
-
-
-All columns are required unless specified otherwise.
+ </LinearRing> </outerBoundaryIs> </Polygon>,'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+',TEXT,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'

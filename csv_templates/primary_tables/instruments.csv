@@ -1,10 +1,2 @@
 make,model,serial_number,type
-
-
-Data Types:
-make: Text, Can only be one from 'HySpex', 'Headwall', 'Velodyne', 'Ocean Optics', 'Spectra Vista', 'ASD', 'Spectral Evolution', 'iMAR', 'Trimble', 'Emlid', 'Garmin',
-model: Text, Can only be one from 'VNIR-1800', 'SWIR-384', 'Mjolnir VS-620', 'Nano', 'Puck', 'HR-1024i', 'FieldSpec 4', 'PSR+', 'iTraceRT-F400', 'Geo7x', 'RS+',
-serial_number: TEXT that is Unique,
-type: Text, Can only be one from 'GPS', 'imaging spectrometer', 'point spectrometer', 'INS', 'LiDAR'
-
-All columns are required unless specified otherwise.
+'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+', Unique TEXT,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'

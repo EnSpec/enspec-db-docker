@@ -1,18 +1,2 @@
 line_id,line_no,quality,image_dir,image_dir_owner,image_exists,processing_date,expiration_date,expiration_type
-
-
-Data Types same as from tables rawdata and image_output:
-From rawdata table --
-line_id: FLOAT,
-line_no: FLOAT,
-quality: Text, can only be 'Green' or 'Yellow' or 'Red'
-From image_output table --
-image_dir: TEXT,
-image_dir_owner: TEXT,
-image_exists: BOOL,
-processing_date: DATE,
-expiration_date: DATE,
-expiration_type: Text, Can be only one from 'reprocess', 'delete', 'glacier storage'
-
-
-All columns are required unless specified otherwise.
+FLOAT,FLOAT,'Green' or 'Yellow' or 'Red',TEXT,TEXT,BOOL,DATE,DATE,'reprocess' or 'delete' or 'glacier storage'

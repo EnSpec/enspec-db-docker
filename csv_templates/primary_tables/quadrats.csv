@@ -1,10 +1,2 @@
 quadrat_name,sampled,sampling_method,quadrat_geom_kml
-
-
-Data Types:
-quadrat_name: TEXT,
-sampled: BOOL,
-sampling_method: TEXT,
-quadrat_geom_kml: TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
-
-All columns are required unless specified otherwise.
+TEXT,BOOL,TEXT,KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>

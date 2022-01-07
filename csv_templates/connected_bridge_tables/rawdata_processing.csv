@@ -1,17 +1,2 @@
 line_id,line_no,quality,system,software_version,job_type,input_dir,proc_params
-
-
-Data Types same as from tables rawdata and processing_events:
-From rawdata table --
-line_id: FLOAT,
-line_no: FLOAT,
-quality: Text, can only be 'Green' or 'Yellow' or 'Red'
-From processing_events table --
-system: TEXT,
-software_version: TEXT,
-job_type: TEXT,
-input_dir: TEXT,
-proc_params: TEXT
-
-
-All columns are required unless specified otherwise.
+FLOAT,FLOAT,'Green' or 'Yellow' or 'Red',TEXT,TEXT,TEXT,TEXT,TEXT

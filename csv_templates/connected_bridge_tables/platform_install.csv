@@ -1,14 +1,2 @@
 aircraft_sign,platform_type,install_date,removal_date,dir_location
-
-
-Data Types same as platform and installations table:
-From platform table -- 
-aircraft_sign: TEXT
-platform_type: TEXT
-From installations table --
-install_date: DATE,
-removal_date: DATE, Not a required field, can be empty,
-dir_location: TEXT
-
-
-All columns are required unless specified otherwise.
+TEXT,TEXT,DATE,DATE (can be empty),TEXT

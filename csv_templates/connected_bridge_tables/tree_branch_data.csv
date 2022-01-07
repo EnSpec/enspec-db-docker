@@ -1,10 +1,5 @@
 canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat,branch_position,branch_exposure
-
-
-Data Types same as from tree_data and branch_data tables:
-From tree_data table --
-canopy_level: Text, Can only be one from 'Canopy(C)', 'Subcanopy(S)', 'Understory(U)', 'Ground'
-crown_poly_kml: TEXT, KML for example:
+'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -12,12 +7,4 @@ crown_poly_kml: TEXT, KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>
-tree_loc_long: FLOAT,
-tree_loc_lat: FLOAT
-From branch_data table --
-branch_position: Can only be 'Sun' or 'Shade'
-branch_exposure: Can only be 'Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'
-
-
-All columns are required unless specified otherwise.
+ </LinearRing> </outerBoundaryIs> </Polygon>,FLOAT,FLOAT,'Sun' or 'Shade','Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'

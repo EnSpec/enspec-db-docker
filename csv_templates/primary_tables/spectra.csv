@@ -1,13 +1,2 @@
 spectrum_type,leaf_number,specdal_version,spectra_group_naming,raw_file_location,processing_spectra_loc
-
-
-Data Types:
-spectrum_type: Text, Can only be 'Fresh' or 'Dry',
-leaf_number: INTEGER,
-specdal_version: TEXT,
-spectra_group_naming: TEXT,
-raw_file_location: TEXT,
-processing_spectra_loc: TEXT
-
-
-All columns are required unless specified otherwise.
+'Fresh' or 'Dry',INTEGER,TEXT,TEXT,TEXT,TEXT

@@ -1,24 +1,2 @@
 calculation_method,roll_offset,pitch_offset,heading_offset,rmse,gcp_file,line_id,line_no,quality,dsm_name,extent_poly_kml,epsg,vdatum,dsm_file,dsm_metadata
-
-
-Data Types same types as for boresight_offsets, rawdata and dsm tables with entries to be connected:
-From boresight_offsets table --
-calculation_method: Text
-roll_offset: Float
-pitch_offset: Float
-heading_offset: Float
-rmse: Float
-gcp_file: Text
-From rawdata table --
-line_id:
-line_no:
-quality:
-From dsm table --
-dsm_name: Text
-extent_poly_kml: Text KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>
-epsg: Float
-vdatum: Text
-dsm_file: Text
-dsm_metadata: Text, Not a required field, can be empty
-
-All columns are required unless specified otherwise.
+Text,Float,Float,Float,Float,Text,FLOAT,FLOAT,'Green' or 'Yellow' or 'Red',Text,Text KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,Float,Text,Text,Text (can be empty)
