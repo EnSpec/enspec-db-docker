@@ -1,2 +1,2 @@
 session_name,start_time,end_time,line_count,bad_lines,session_notes,variable_name,variable_type,units_name,units_type,units_description,value
-TEXT,TIME,TIME,FLOAT,TEXT (can be empty),TEXT (can be empty),UNIQUE TEXT,TEXT (can be empty)TEXT,TEXT,TEXT (can be empty),FLOAT
+TEXT,TIME,TIME,FLOAT,TEXT (can be empty),TEXT (can be empty),UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,TEXT (can be empty),FLOAT
