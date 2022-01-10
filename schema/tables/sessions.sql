@@ -7,7 +7,8 @@ CREATE TABLE sessions (
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
   line_count FLOAT NOT NULL,
-  bad_lines TEXT
+  bad_lines TEXT,
+  session_notes TEXT
 );
 CREATE INDEX sessions_source_id_idx ON sessions(source_id);
 
@@ -20,6 +21,7 @@ CREATE OR REPLACE VIEW sessions_view AS
     s.end_time  as end_time,
     s.line_count  as line_count,
     s.bad_lines  as bad_lines,
+    s.session_notes as session_notes,
     sc.name AS source_name
   FROM
     sessions s
@@ -33,6 +35,7 @@ CREATE OR REPLACE FUNCTION insert_sessions (
   end_time TIME,
   line_count FLOAT,
   bad_lines TEXT,
+  session_notes TEXT,
   source_name TEXT) RETURNS void AS $$
 DECLARE
   source_id UUID;
@@ -44,9 +47,9 @@ BEGIN
   SELECT get_source_id(source_name) INTO source_id;
 
   INSERT INTO sessions (
-    sessions_id, session_name, start_time, end_time, line_count, bad_lines, source_id
+    sessions_id, session_name, start_time, end_time, line_count, bad_lines, session_notes, source_id
   ) VALUES (
-    sessions_id, session_name, start_time, end_time, line_count, bad_lines, source_id
+    sessions_id, session_name, start_time, end_time, line_count, bad_lines, session_notes, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -60,13 +63,14 @@ CREATE OR REPLACE FUNCTION update_sessions (
   start_time_in TIME,
   end_time_in TIME,
   line_count_in FLOAT,
-  bad_lines_in TEXT) RETURNS void AS $$
+  bad_lines_in TEXT,
+  session_notes_in TEXT) RETURNS void AS $$
 BEGIN
 
   UPDATE sessions SET (
-    session_name, start_time, end_time, line_count, bad_lines
+    session_name, start_time, end_time, line_count, bad_lines, session_notes
   ) = (
-    session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in
+    session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in
   ) WHERE
     sessions_id = sessions_id_in;
 
@@ -86,6 +90,7 @@ BEGIN
     end_time := NEW.end_time,
     line_count := NEW.line_count,
     bad_lines := NEW.bad_lines,
+    session_notes := NEW.session_notes,
 
     source_name := NEW.source_name
   );
@@ -105,7 +110,8 @@ BEGIN
     start_time_in := NEW.start_time,
     end_time_in := NEW.end_time,
     line_count_in := NEW.line_count,
-    bad_lines_in := NEW.bad_lines
+    bad_lines_in := NEW.bad_lines,
+    session_notes_in := NEW.session_notes
   );
   RETURN NEW;
 
@@ -115,37 +121,23 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_sessions_id(session_name_in text, start_time_in time, end_time_in time, line_count_in float, bad_lines_in text) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_sessions_id(session_name_in text, start_time_in time, end_time_in time, line_count_in float, bad_lines_in text, session_notes_in text) RETURNS UUID AS $$
 DECLARE
   sid UUID;
 BEGIN
 
-  IF bad_lines_in is NULL THEN
-    SELECT
-      sessions_id INTO sid
-    FROM
-      sessions s
-    WHERE
-      session_name = session_name_in AND
-      start_time = start_time_in AND
-      end_time = end_time_in AND
-      line_count = line_count_in AND
-      bad_lines is NULL;
-  ELSE
-    SELECT
-      sessions_id INTO sid
-    FROM
-      sessions s
-    WHERE
-      session_name = session_name_in AND
-      start_time = start_time_in AND
-      end_time = end_time_in AND
-      line_count = line_count_in AND
-      bad_lines = bad_lines_in;
-  END IF;
+  SELECT
+    sessions_id INTO sid
+  FROM
+    sessions s
+  WHERE
+    session_name = session_name_in AND
+    start_time = start_time_in AND
+    end_time = end_time_in AND
+    line_count = line_count_in;
 
   IF (sid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown sessions: session_name="%" start_time="%" end_time="%" line_count="%" bad_lines="%"', session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in;
+    RAISE EXCEPTION 'Unknown sessions: session_name="%" start_time="%" end_time="%" line_count="%" bad_lines="%" session_notes="%"', session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in;
   END IF;
 
   RETURN sid;

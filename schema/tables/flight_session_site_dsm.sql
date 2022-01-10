@@ -24,11 +24,13 @@ CREATE OR REPLACE VIEW flight_session_site_dsm_view AS
     fl.flight_hours AS flight_hours,
     fl.start_time AS flight_start_time,
     fl.end_time AS flight_end_time,
+    fl.flight_notes AS flight_notes,
     s.session_name AS session_name,
     s.start_time AS session_start_time,
     s.end_time AS session_end_time,
     s.line_count AS line_count,
     s.bad_lines AS bad_lines,
+    s.session_notes AS session_notes,
     ss.site_name AS site_name,
     ss.region AS region,
     ST_AsKML(ss.site_poly)  as site_poly_kml,
@@ -56,11 +58,13 @@ CREATE OR REPLACE FUNCTION insert_flight_session_site_dsm (
   flight_hours FLOAT,
   flight_start_time TIME,
   flight_end_time TIME,
+  flight_notes TEXT,
   session_name TEXT,
   session_start_time TIME,
   session_end_time TIME,
   line_count FLOAT,
   bad_lines TEXT,
+  session_notes TEXT,
   site_name TEXT,
   region TEXT,
   site_poly_kml TEXT,
@@ -83,8 +87,8 @@ BEGIN
     SELECT uuid_generate_v4() INTO flight_session_site_dsm_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_flights_id(flights_date, pilot, operator, flight_hours, flight_start_time, flight_end_time) INTO flid;
-  SELECT get_sessions_id(session_name, session_start_time, session_end_time, line_count, bad_lines) INTO s_id;
+  SELECT get_flights_id(flights_date, pilot, operator, flight_hours, flight_start_time, flight_end_time, flight_notes) INTO flid;
+  SELECT get_sessions_id(session_name, session_start_time, session_end_time, line_count, bad_lines, session_notes) INTO s_id;
   SELECT get_study_sites_id(site_name, region, site_poly_kml) INTO ss_id;
   SELECT get_dsm_id(dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata) INTO d_id;
 
@@ -107,11 +111,13 @@ CREATE OR REPLACE FUNCTION update_flight_session_site_dsm (
   flight_hours_in FLOAT,
   flight_start_time_in TIME,
   flight_end_time_in TIME,
+  flight_notes_in TIME,
   session_name_in TEXT,
   session_start_time_in TIME,
   session_end_time_in TIME,
   line_count_in FLOAT,
   bad_lines_in TEXT,
+  session_notes_in TEXT,
   site_name_in TEXT,
   region_in TEXT,
   site_poly_kml_in TEXT,
@@ -127,8 +133,8 @@ DECLARE
   ss_id UUID;
   d_id UUID;
 BEGIN
-  SELECT get_flights_id(flights_date_in, pilot_in, operator_in, flight_hours_in, flight_start_time_in, flight_end_time_in) INTO flid;
-  SELECT get_sessions_id(session_name_in, session_start_time_in, session_end_time_in, line_count_in, bad_lines_in) INTO s_id;
+  SELECT get_flights_id(flights_date_in, pilot_in, operator_in, flight_hours_in, flight_start_time_in, flight_end_time_in, flight_notes_in) INTO flid;
+  SELECT get_sessions_id(session_name_in, session_start_time_in, session_end_time_in, line_count_in, bad_lines_in, session_notes_in) INTO s_id;
   SELECT get_study_sites_id(site_name_in, region_in, site_poly_kml_in) INTO ss_id;
   SELECT get_dsm_id(dsm_name_in, extent_poly_kml_in, epsg_in, vdatum_in, dsm_file_in, dsm_metadata_in) INTO d_id;
   UPDATE flight_session_site_dsm SET (
@@ -155,11 +161,13 @@ BEGIN
     flight_hours := NEW.flight_hours,
     flight_start_time := NEW.flight_start_time,
     flight_end_time := NEW.flight_end_time,
+    flight_notes := NEW.flight_notes,
     session_name := NEW.session_name,
     session_start_time := NEW.session_start_time,
     session_end_time := NEW.session_end_time,
     line_count := NEW.line_count,
     bad_lines := NEW.bad_lines,
+    session_notes := NEW.session_notes,
     site_name := NEW.site_name,
     region := NEW.region,
     site_poly_kml := NEW.site_poly_kml,
@@ -189,11 +197,13 @@ BEGIN
     flight_hours_in := NEW.flight_hours,
     flight_start_time_in := NEW.flight_start_time,
     flight_end_time_in := NEW.flight_end_time,
+    flight_notes_in := NEW.flight_notes,
     session_name_in := NEW.session_name,
     session_start_time_in := NEW.session_start_time,
     session_end_time_in := NEW.session_end_time,
     line_count_in := NEW.line_count,
     bad_lines_in := NEW.bad_lines,
+    session_notes_in := NEW.session_notes,
     site_name_in := NEW.site_name,
     region_in := NEW.region,
     site_poly_kml_in := NEW.site_poly_kml,
@@ -219,11 +229,13 @@ CREATE OR REPLACE FUNCTION get_flight_session_site_dsm_id(
   flight_hours float,
   flight_start_time time,
   flight_end_time time,
+  flight_notes text,
   session_name text,
   session_start_time time,
   session_end_time time,
   line_count float,
   bad_lines text,
+  session_notes text,
   site_name text,
   region text,
   site_poly_kml TEXT,
@@ -241,8 +253,8 @@ DECLARE
   d_id UUID;
   ss_id UUID;
 BEGIN
-  SELECT get_flights_id(flights_date, pilot, operator, flight_hours, flight_start_time, flight_end_time) INTO flid;
-  SELECT get_sessions_id(session_name, session_start_time, session_end_time, line_count, bad_lines) INTO s_id;
+  SELECT get_flights_id(flights_date, pilot, operator, flight_hours, flight_start_time, flight_end_time, flight_notes) INTO flid;
+  SELECT get_sessions_id(session_name, session_start_time, session_end_time, line_count, bad_lines, session_notes) INTO s_id;
   SELECT get_study_sites_id(site_name, region, site_poly_kml) INTO ss_id;
   SELECT get_dsm_id(dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata) INTO d_id;
   SELECT
@@ -255,10 +267,10 @@ BEGIN
     site_id = ss_id AND
     dsm_id = d_id;
   IF (fid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown flight_session_site_dsm: flights_date="%" pilot="%" operator="%" flight_hours="%" flight_start_time="%" flight_end_time="%" session_name="%"
-     session_start_time="%" session_end_time="%" line_count="%" bad_lines="%" site_name="%" region="%" site_poly_kml="%" dsm_name="%" extent_poly_kml="%" epsg="%" vdatum="%" dsm_file="%" dsm_metadata="%"',
-    flights_date, pilot, operator, flight_hours, flight_start_time, flight_end_time, session_name, session_start_time, session_end_time,
-    line_count, bad_lines, site_name, region, site_poly_kml, dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata;
+    RAISE EXCEPTION 'Unknown flight_session_site_dsm: flights_date="%" pilot="%" operator="%" flight_hours="%" flight_start_time="%" flight_end_time="%" flight_notes="%" session_name="%"
+     session_start_time="%" session_end_time="%" line_count="%" bad_lines="%" session_notes="%" site_name="%" region="%" site_poly_kml="%" dsm_name="%" extent_poly_kml="%" epsg="%" vdatum="%" dsm_file="%" dsm_metadata="%"',
+    flights_date, pilot, operator, flight_hours, flight_start_time, flight_end_time, flight_notes, session_name, session_start_time, session_end_time,
+    line_count, bad_lines, session_notes, site_name, region, site_poly_kml, dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata;
   END IF;
 
   RETURN fid;

@@ -20,6 +20,7 @@ CREATE OR REPLACE VIEW flight_installation_view AS
     fl.flight_hours AS flight_hours,
     fl.start_time AS start_time,
     fl.end_time AS end_time,
+    fl.flight_notes AS flight_notes,
     i.install_date AS install_date,
     i.removal_date AS removal_date,
     i.dir_location AS dir_location,
@@ -39,6 +40,7 @@ CREATE OR REPLACE FUNCTION insert_flight_installation (
   flight_hours FLOAT,
   start_time TIME,
   end_time TIME,
+  flight_notes TEXT,
   install_date DATE,
   removal_date DATE,
   dir_location TEXT,
@@ -54,7 +56,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO flight_installation_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_flights_id(flight_date, pilot, operator, flight_hours, start_time, end_time) INTO flid;
+  SELECT get_flights_id(flight_date, pilot, operator, flight_hours, start_time, end_time, flight_notes) INTO flid;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO iid;
 
   INSERT INTO flight_installation (
@@ -76,6 +78,7 @@ CREATE OR REPLACE FUNCTION update_flight_installation (
   flight_hours_in FLOAT,
   start_time_in TIME,
   end_time_in TIME,
+  flight_notes_in TEXT,
   install_date_in DATE,
   removal_date_in DATE,
   dir_location_in TEXT) RETURNS void AS $$
@@ -83,7 +86,7 @@ DECLARE
  flid UUID;
  iid UUID;
 BEGIN
-  SELECT get_flights_id(flight_date_in, pilot_in, operator_in, flight_hours_in, start_time_in, end_time_in) INTO flid;
+  SELECT get_flights_id(flight_date_in, pilot_in, operator_in, flight_hours_in, start_time_in, end_time_in, flight_notes_in) INTO flid;
   SELECT get_installations_id(install_date_in, removal_date_in, dir_location_in) INTO iid;
   UPDATE flight_installation SET (
     flights_id, installations_id
@@ -109,6 +112,7 @@ BEGIN
     flight_hours := NEW.flight_hours,
     start_time := NEW.start_time,
     end_time := NEW.end_time,
+    flight_notes := NEW.flight_notes,
     install_date := NEW.install_date,
     removal_date := NEW.removal_date,
     dir_location := NEW.dir_location,
@@ -132,6 +136,7 @@ BEGIN
     flight_hours := NEW.flight_hours,
     start_time := NEW.start_time,
     end_time := NEW.end_time,
+    flight_notes := NEW.flight_notes,
     install_date := NEW.install_date,
     removal_date := NEW.removal_date,
     dir_location := NEW.dir_location
@@ -145,13 +150,13 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_flight_installation_id(
-  flight_date date, pilot text, operator text, flight_hours float, start_time time, end_time time, install_date date, removal_date date, dir_location text) RETURNS UUID AS $$
+  flight_date date, pilot text, operator text, flight_hours float, start_time time, end_time time, flight_notes text, install_date date, removal_date date, dir_location text) RETURNS UUID AS $$
 DECLARE
   fid UUID;
   flid UUID;
   iid UUID;
 BEGIN
-  SELECT get_flights_id(flight_date, pilot, operator, flight_hours, start_time, end_time) INTO flid;
+  SELECT get_flights_id(flight_date, pilot, operator, flight_hours, start_time, end_time, flight_notes) INTO flid;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO iid;
   SELECT
     flight_installation_id INTO fid
@@ -161,8 +166,8 @@ BEGIN
     flights_id = flid AND
     installations_id = iid;
   IF (fid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown flight_installation: flight_date="%" pilot="%" operator"%" flight_hours"%" start_time"%" end_time"%" install_date"%" removal_date"%" dir_location"%"',
-    flight_date, pilot, operator, flight_hours, start_time, end_time, install_date, removal_date, dir_location;
+    RAISE EXCEPTION 'Unknown flight_installation: flight_date="%" pilot="%" operator"%" flight_hours"%" start_time"%" end_time"%" flight_notes="%" install_date"%" removal_date"%" dir_location"%"',
+    flight_date, pilot, operator, flight_hours, start_time, end_time, flight_notes, install_date, removal_date, dir_location;
   END IF;
 
   RETURN fid;

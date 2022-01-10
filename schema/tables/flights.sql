@@ -8,7 +8,8 @@ CREATE TABLE flights (
   operator TEXT NOT NULL,
   flight_hours FLOAT NOT NULL,
   start_time TIME NOT NULL,
-  end_time TIME NOT NULL
+  end_time TIME NOT NULL,
+  flight_notes TEXT
 );
 CREATE INDEX flights_source_id_idx ON flights(source_id);
 
@@ -22,6 +23,7 @@ CREATE OR REPLACE VIEW flights_view AS
     f.flight_hours  as flight_hours,
     f.start_time  as start_time,
     f.end_time  as end_time,
+    f.flight_notes as flight_notes,
 
     sc.name AS source_name
   FROM
@@ -37,6 +39,7 @@ CREATE OR REPLACE FUNCTION insert_flights (
   flight_hours FLOAT,
   start_time TIME,
   end_time TIME,
+  flight_notes TEXT,
 
   source_name TEXT) RETURNS void AS $$
 DECLARE
@@ -49,9 +52,9 @@ BEGIN
   SELECT get_source_id(source_name) INTO source_id;
 
   INSERT INTO flights (
-    flights_id, flight_date, pilot, operator, flight_hours, start_time, end_time, source_id
+    flights_id, flight_date, pilot, operator, flight_hours, start_time, end_time, flight_notes, source_id
   ) VALUES (
-    flights_id, flight_date, pilot, operator, flight_hours, start_time, end_time, source_id
+    flights_id, flight_date, pilot, operator, flight_hours, start_time, end_time, flight_notes, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -66,14 +69,15 @@ CREATE OR REPLACE FUNCTION update_flights (
   operator_in TEXT,
   flight_hours_in FLOAT,
   start_time_in TIME,
-  end_time_in TIME) RETURNS void AS $$
+  end_time_in TIME,
+  flight_notes_in TEXT) RETURNS void AS $$
 
 BEGIN
 
   UPDATE flights SET (
-    flight_date, pilot, operator, flight_hours, start_time, end_time
+    flight_date, pilot, operator, flight_hours, start_time, end_time, flight_notes
   ) = (
-    flight_date_in, pilot_in, operator_in, flight_hours_in, start_time_in, end_time_in
+    flight_date_in, pilot_in, operator_in, flight_hours_in, start_time_in, end_time_in, flight_notes_in
   ) WHERE
     flights_id = flights_id_in;
 
@@ -94,6 +98,7 @@ BEGIN
     flight_hours := NEW.flight_hours,
     start_time := NEW.start_time,
     end_time := NEW.end_time,
+    flight_notes := NEW.flight_notes,
 
     source_name := NEW.source_name
   );
@@ -114,7 +119,8 @@ BEGIN
     operator_in := NEW.operator,
     flight_hours_in := NEW.flight_hours,
     start_time_in := NEW.start_time,
-    end_time_in := NEW.end_time
+    end_time_in := NEW.end_time,
+    flight_notes_in := NEW.flight_notes
   );
   RETURN NEW;
 
@@ -124,7 +130,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_flights_id(flights_date_in date, pilot_in text, operator_in text, flight_hours_in float, start_time_in time, end_time_in time) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_flights_id(flights_date_in date, pilot_in text, operator_in text, flight_hours_in float, start_time_in time, end_time_in time, flight_notes_in text) RETURNS UUID AS $$
 DECLARE
   fid UUID;
 BEGIN
@@ -142,7 +148,7 @@ BEGIN
     end_time = end_time_in;
 
   IF (fid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown flights: flight_date="%" pilot="%" operator="%" flight_hours="%" start_time="%" end_time="%"', flight_date, pilot_in, operator_in, flight_hours_in, start_time_in, end_time_in;
+    RAISE EXCEPTION 'Unknown flights: flight_date="%" pilot="%" operator="%" flight_hours="%" start_time="%" end_time="%" flight_notes="%"', flight_date, pilot_in, operator_in, flight_hours_in, start_time_in, end_time_in, flight_notes_in;
   END IF;
 
   RETURN fid;
