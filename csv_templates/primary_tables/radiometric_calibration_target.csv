@@ -1,5 +1,5 @@
-calibration_date,collection_start_time,collection_stop_time,radiometric_target_center_kml,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc
-DATE,TIME,TIME,FLOAT,FLOAT,TEXT KML for example:
+reference_number,calibration_date,collection_start_time,collection_stop_time,rt_center_long,rt_center_lat,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc
+TEXT,DATE,TIME,TIME,FLOAT(Example -122.082203542568294),FLOAT (Example 37.4222899014025),"TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -7,4 +7,4 @@ DATE,TIME,TIME,FLOAT,FLOAT,TEXT KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,TEXT,TEXT
+ </LinearRing> </outerBoundaryIs> </Polygon>",TEXT,TEXT

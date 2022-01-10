@@ -1,6 +1,5 @@
-plot_name,plot_type,physiognomic_type,plot_description,veg_coverage,plot_sketch_file,datasheet_scan_file,plot_geom,plot_notes,canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat
-Text,'Quadrat' or 'Transect' or 'Tree canopy','Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland',Text,Float,Text,Text,KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,Text (can be empty),'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',
-TEXT KML for example:
+plot_name,plot_type,physiognomic_type,plot_description,veg_coverage,plot_sketch_file,datasheet_scan_file,plot_geom_kml,plot_notes,canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat
+Text,'Quadrat' or 'Transect' or 'Tree canopy','Deciduous forest' or 'Coniferous forest' or 'Tundra' or 'Shrubland' or 'Wetland' or 'Grassland',Text,Float,Text,Text,"KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",Text (can be empty),'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',"TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -8,4 +7,4 @@ TEXT KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,FLOAT,FLOAT
+ </LinearRing> </outerBoundaryIs> </Polygon>",FLOAT,FLOAT

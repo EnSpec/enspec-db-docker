@@ -1,2 +1,2 @@
 project_name,funding_source,project_region,project_poly_kml,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity,activity_description,activity_date_started,activity_date_completed,activity_lead
-TEXT,TEXT,TEXT,KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),Unique Text,Text,DATE,DATE (can be empty),TEXT
+TEXT,TEXT,TEXT,"KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),Unique Text,Text,DATE,DATE (can be empty),TEXT

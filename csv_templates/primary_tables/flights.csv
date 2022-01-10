@@ -1,2 +1,2 @@
-flight_date,pilot,operator,flight_hours,start_time,end_time
-DATE,TEXT,TEXT,FLOAT,TIME,TIME
+flight_date,pilot,operator,flight_hours,start_time,end_time,flight_notes
+DATE,TEXT,TEXT,FLOAT,TIME,TIME,TEXT (can be empty)

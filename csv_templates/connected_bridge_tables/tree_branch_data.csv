@@ -1,5 +1,5 @@
 canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat,branch_position,branch_exposure
-'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',TEXT KML for example:
+'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',"TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -7,4 +7,4 @@ canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat,branch_position,branch_ex
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,FLOAT,FLOAT,'Sun' or 'Shade','Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'
+ </LinearRing> </outerBoundaryIs> </Polygon>",FLOAT,FLOAT,'Sun' or 'Shade','Top-of-canopy(TOC)' or 'Mid(M)' or 'Lower(L)'

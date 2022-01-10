@@ -1,5 +1,5 @@
 canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat,common_name,family,genus,species,authority,synonym_symbol,subspecies,symbol
-'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',TEXT KML for example:
+'Canopy(C)' or 'Subcanopy(S)' or 'Understory(U)' or 'Ground',"TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -7,4 +7,4 @@ canopy_level,crown_poly_kml,tree_loc_long,tree_loc_lat,common_name,family,genus,
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,FLOAT,FLOAT,UNIQUE TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT
+ </LinearRing> </outerBoundaryIs> </Polygon>",FLOAT,FLOAT,UNIQUE TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT

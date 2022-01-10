@@ -1,2 +1,2 @@
-flight_date,pilot,operator,flight_hours,start_time,end_time,install_date,removal_date,dir_location
-DATE,TEXT,TEXT,FLOAT,TIME,TIME,DATE,DATE (can be empty),TEXT
+flight_date,pilot,operator,flight_hours,start_time,end_time,flight_notes,install_date,removal_date,dir_location
+DATE,TEXT,TEXT,FLOAT,TIME,TIME,TEXT (can be empty),DATE,DATE (can be empty),TEXT

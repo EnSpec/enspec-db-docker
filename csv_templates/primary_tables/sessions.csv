@@ -1,2 +1,2 @@
-session_name,start_time,end_time,line_count,bad_lines
-TEXT,TIME,TIME,FLOAT,TEXT (can be empty)
+session_name,start_time,end_time,line_count,bad_lines,session_notes
+TEXT,TIME,TIME,FLOAT,TEXT (can be empty),TEXT (can be empty)

@@ -1,2 +1,2 @@
 quadrat_name,sampled,sampling_method,quadrat_geom_kml,observation_type,observation_subtype,value_precision,variable_name,variable_type,units_name,units_type,units_description
-TEXT,BOOL,TEXT,TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,TEXT,TEXT (can be empty),INTEGER,UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,TEXT (can be empty),Float
+TEXT,BOOL,TEXT,"TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",TEXT,TEXT (can be empty),INTEGER,UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,TEXT (can be empty),Float

@@ -1,5 +1,5 @@
 site_name,region,site_poly_kml,project_name,funding_source,project_region,project_poly_kml
-Text,Text (can be empty),Text KML for example:
+Text,Text (can be empty),"Text KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -7,7 +7,7 @@ Text,Text (can be empty),Text KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,TEXT,TEXT,TEXT,TEXT KML for example:
+ </LinearRing> </outerBoundaryIs> </Polygon>",TEXT,TEXT,TEXT,"TEXT KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -15,4 +15,4 @@ Text,Text (can be empty),Text KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>
+ </LinearRing> </outerBoundaryIs> </Polygon>"

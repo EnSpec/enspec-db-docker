@@ -1,5 +1,5 @@
 calibration_date,collection_start_time,collection_stop_time,rt_center_long,rt_center_lat,radiometric_target_poly_kml,raw_file_loc,processed_spectra_loc,site_name,region,site_poly_kml,make,model,serial_number,type
-DATE,TIME,TIME,FLOAT,FLOAT,TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,TEXT,TEXT,Text,Text (can be empty),Text KML for example:
+DATE,TIME,TIME,FLOAT,FLOAT,"TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",TEXT,TEXT,Text,Text (can be empty),"Text KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -7,4 +7,4 @@ DATE,TIME,TIME,FLOAT,FLOAT,TEXT KML for example: <Point><coordinates>-122.082203
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+',Unique Text,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'
+ </LinearRing> </outerBoundaryIs> </Polygon>",'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+',Unique Text,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'

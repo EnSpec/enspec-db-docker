@@ -1,6 +1,5 @@
 gcp_long,gcp_lat,gcp_csv_loc,gcp_coordinate_system,gcp_date,site_name,region,site_poly_kml,make,model,serial_number,type
-FLOAT,FLOAT,TEXT,INT,DATE,TEXT,TEXT (can be empty)
-Text KML for example:
+FLOAT,FLOAT,TEXT,INT,DATE,TEXT,TEXT (can be empty),"Text KML for example:
 <Polygon> <outerBoundaryIs>  <LinearRing>
   <coordinates>
    135.2, 35.4, 0.
@@ -8,4 +7,4 @@ Text KML for example:
    135.2, 35.6, 0.
    135.2, 35.4, 0.
   </coordinates>
- </LinearRing> </outerBoundaryIs> </Polygon>,'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+',TEXT,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'
+ </LinearRing> </outerBoundaryIs> </Polygon>",'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+',TEXT,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'

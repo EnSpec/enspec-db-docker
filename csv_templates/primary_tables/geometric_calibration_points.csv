@@ -1,2 +1,2 @@
-gcp_kml_text,gcp_csv_loc,gcp_coordinate_system,gcp_date
-TEXT KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>,TEXT,INT,DATE
+gcp_long,gcp_lat,gcp_csv_loc,gcp_coordinate_system,gcp_date
+FLOAT,FLOAT,TEXT,INT,DATE
