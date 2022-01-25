@@ -23,7 +23,6 @@ CREATE OR REPLACE VIEW sessions_personnel_view AS
     ses.start_time  as start_time,
     ses.end_time  as end_time,
     ses.line_count  as line_count,
-    ses.bad_lines  as bad_lines,
     ses.session_notes as session_notes,
     per.personnel_name  as personnel_name,
     per.personnel_role  as personnel_role,
@@ -53,7 +52,6 @@ CREATE OR REPLACE FUNCTION insert_sessions_personnel (
   start_time TIME,
   end_time TIME,
   line_count FLOAT,
-  bad_lines TEXT,
   session_notes TEXT,
   personnel_name TEXT,
   personnel_role TEXT,
@@ -75,7 +73,7 @@ DECLARE
   perid UUID;
   acid UUID;
 BEGIN
-  SELECT get_sessions_id(session_name, start_time, end_time, line_count, bad_lines, session_notes) INTO sesid;
+  SELECT get_sessions_id(session_name, start_time, end_time, line_count, session_notes) INTO sesid;
   SELECT get_personnel_id(personnel_name, personnel_role, organization, office_phone, cell_phone, email, personnel_notes) INTO perid;
   SELECT get_activity_id(activity, activity_description) INTO acid;
 
@@ -101,7 +99,6 @@ CREATE OR REPLACE FUNCTION update_sessions_personnel (
   start_time_in TIME,
   end_time_in TIME,
   line_count_in FLOAT,
-  bad_lines_in TEXT,
   session_notes_in TEXT,
   personnel_name_in TEXT,
   personnel_role_in TEXT,
@@ -120,7 +117,7 @@ sesid UUID;
 perid UUID;
 acid UUID;
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in) INTO sesid;
+  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sesid;
   SELECT get_personnel_id(personnel_name_in, personnel_role_in, organization_in, office_phone_in, cell_phone_in, email_in, personnel_notes_in) INTO perid;
   SELECT get_activity_id(activity_in, activity_description_in) INTO acid;
 
@@ -146,7 +143,6 @@ BEGIN
     start_time := NEW.start_time,
     end_time := NEW.end_time,
     line_count := NEW.line_count,
-    bad_lines := NEW.bad_lines,
     session_notes := NEW.session_notes,
     personnel_name := NEW.personnel_name,
     personnel_role := NEW.personnel_role,
@@ -179,7 +175,6 @@ BEGIN
     start_time_in := NEW.start_time,
     end_time_in := NEW.end_time,
     line_count_in := NEW.line_count,
-    bad_lines_in := NEW.bad_lines,
     session_notes_in := NEW.session_notes,
     personnel_name_in := NEW.personnel_name,
     personnel_role_in := NEW.personnel_role,
@@ -203,7 +198,7 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_sessions_personnel_id(
-  session_name_in text, start_time_in time, end_time_in time, line_count_in float, bad_lines_in text, session_notes_in text,
+  session_name_in text, start_time_in time, end_time_in time, line_count_in float, session_notes_in text,
   personnel_name_in TEXT, personnel_role_in TEXT, organization_in TEXT, office_phone_in TEXT,
   cell_phone_in TEXT, email_in TEXT, personnel_notes_in TEXT, activity_in TEXT, activity_description_in TEXT,
   activity_date_started_in DATE, activity_date_completed_in DATE, activity_lead_in TEXT
@@ -214,7 +209,7 @@ DECLARE
   perid UUID;
   acid UUID;
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in) INTO sesid;
+  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sesid;
   SELECT get_personnel_id(personnel_name_in, personnel_role_in, organization_in, office_phone_in, cell_phone_in, email_in, personnel_notes_in) INTO perid;
   SELECT get_activity_id(activity_in, activity_description_in) INTO acid;
 
@@ -239,10 +234,10 @@ BEGIN
   END IF;
 
   IF (sid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown sessions_personnel: session_name="%" start_time="%" end_time="%" line_count="%" bad_lines="%" session_notes="%"
+    RAISE EXCEPTION 'Unknown sessions_personnel: session_name="%" start_time="%" end_time="%" line_count="%" session_notes="%"
     personnel_name="%" personnel_role="%" organization="%" office_phone="%" cell_phone="%" email="%" personnel_notes="%"
     activity="%" activity_description="%" activity_date_started ="%" activity_date_completed="%" activity_lead="%"',
-    session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in,
+    session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in,
     personnel_name_in, personnel_role_in, organization_in, office_phone_in, cell_phone_in, email_in, personnel_notes_in,
     activity_in, activity_description_in, activity_date_started_in, activity_date_completed_in, activity_lead_in;
   END IF;

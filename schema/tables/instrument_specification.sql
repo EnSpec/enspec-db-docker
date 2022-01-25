@@ -17,6 +17,7 @@ CREATE OR REPLACE VIEW instrument_specification_view AS
     inst.model  as model,
     inst.serial_number  as serial_number,
     inst.type  as type,
+    inst.asset_tag as asset_tag,
     sp.name  as name,
     sp.value_ranges  as value_ranges,
     sp.other_details  as other_details,
@@ -35,6 +36,7 @@ CREATE OR REPLACE FUNCTION insert_instrument_specification (
   model INSTRUMENT_MODEL,
   serial_number TEXT,
   type INSTRUMENT_TYPE,
+  asset_tag TEXT,
   name TEXT,
   value_ranges TEXT,
   other_details TEXT,
@@ -50,7 +52,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO instrument_specification_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_instruments_id(make, model, serial_number, type) INTO inst_id;
+  SELECT get_instruments_id(make, model, serial_number, type, asset_tag) INTO inst_id;
   SELECT get_specifications_id(name, value_ranges, other_details) INTO sp_id;
 
   INSERT INTO instrument_specification (
@@ -70,6 +72,7 @@ CREATE OR REPLACE FUNCTION update_instrument_specification (
   model_in INSTRUMENT_MODEL,
   serial_number_in TEXT,
   type_in INSTRUMENT_TYPE,
+  asset_tag_in TEXT,
   name_in TEXT,
   value_ranges_in TEXT,
   other_details_in TEXT) RETURNS void AS $$
@@ -79,7 +82,7 @@ DECLARE
 
 BEGIN
 
-  SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO inst_id;
+  SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in, asset_tag_in) INTO inst_id;
   SELECT get_specifications_id(name_in, value_ranges_in, other_details_in) INTO sp_id;
 
   UPDATE instrument_specification SET (
@@ -104,6 +107,7 @@ BEGIN
     model := NEW.model,
     serial_number := NEW.serial_number,
     type := NEW.type,
+    asset_tag := NEW.asset_tag,
     name := NEW.name,
     value_ranges := NEW.value_ranges,
     other_details := NEW.other_details,
@@ -126,6 +130,7 @@ BEGIN
     model_in := NEW.model,
     serial_number_in := NEW.serial_number,
     type_in := NEW.type,
+    asset_tag_in := NEW.asset_tag,
     name_in := NEW.name,
     value_ranges_in := NEW.value_ranges,
     other_details_in := NEW.other_details
@@ -139,14 +144,14 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_instrument_specification_id(
-  make INSTRUMENT_MAKE, model INSTRUMENT_MODEL, serial_number TEXT, type INSTRUMENT_TYPE, name TEXT, value_ranges TEXT, other_details TEXT) RETURNS UUID AS $$
+  make INSTRUMENT_MAKE, model INSTRUMENT_MODEL, serial_number TEXT, type INSTRUMENT_TYPE, asset_tag TEXT, name TEXT, value_ranges TEXT, other_details TEXT) RETURNS UUID AS $$
 DECLARE
   iid UUID;
   inst_id UUID;
   sp_id UUID;
 BEGIN
 
-  SELECT get_instruments_id(make, model, serial_number, type) INTO inst_id;
+  SELECT get_instruments_id(make, model, serial_number, type, asset_tag) INTO inst_id;
   SELECT get_specifications_id(name, value_ranges, other_details) INTO sp_id;
   SELECT
     instrument_specification_id INTO iid
@@ -157,9 +162,9 @@ BEGIN
     specifications_id = sp_id;
 
   IF (iid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown instrument_specification: make="%" model="%" serial_number="%" type="%" name="%" value_ranges="%" other_details="%"', make, model, serial_number, type, name, value_ranges, other_details;
+    RAISE EXCEPTION 'Unknown instrument_specification: make="%" model="%" serial_number="%" type="%" asset_tag="%" name="%" value_ranges="%" other_details="%"', make, model, serial_number, type, asset_tag, name, value_ranges, other_details;
   END IF;
-  
+
   RETURN iid;
 END ;
 $$ LANGUAGE plpgsql;

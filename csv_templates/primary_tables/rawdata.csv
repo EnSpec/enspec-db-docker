@@ -1,2 +1,2 @@
-line_id,line_no,quality
-FLOAT,FLOAT,'Green' or 'Yellow' or 'Red'
+quality, cold_storage, hot_storage, hot_storage_expiration
+'Green' or 'Yellow' or 'Red', TEXT, TEXT, DATE

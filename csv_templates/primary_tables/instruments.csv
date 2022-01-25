@@ -1,2 +1,2 @@
-make,model,serial_number,type
-'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+', Unique TEXT,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR'
+make,model,serial_number,type,asset_tag
+'HySpex' or 'Headwall' or 'Velodyne' or 'Ocean Optics' or 'Spectra Vista' or 'ASD' or 'Spectral Evolution' or 'iMAR' or 'Trimble' or 'Emlid' or 'Garmin','VNIR-1800' or 'SWIR-384' or 'Mjolnir VS-620' or 'Nano' or 'Puck' or 'HR-1024i' or 'FieldSpec 4' or 'PSR+' or 'iTraceRT-F400' or 'Geo7x' or 'RS+', Unique TEXT,'GPS' or 'imaging spectrometer' or 'point spectrometer' or 'INS' or 'LiDAR',TEXT

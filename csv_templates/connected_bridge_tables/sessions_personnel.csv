@@ -1,2 +1,2 @@
-session_name,start_time,end_time,line_count,bad_lines,session_notes,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity_date_started,activity_date_completed,activity_lead
-TEXT,TIME,TIME,FLOAT,TEXT (can be empty),TEXT (can be empty),UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),DATE,DATE (can be empty),TEXT
+session_name,start_time,end_time,line_count,session_notes,personnel_name,personnel_role,organization,office_phone,cell_phone,email,personnel_notes,activity_date_started,activity_date_completed,activity_lead
+TEXT,TIME,TIME,FLOAT,TEXT (can be empty),UNIQUE TEXT,TEXT,TEXT,TEXT,TEXT,UNIQUE TEXT,TEXT (can be empty),DATE,DATE (can be empty),TEXT

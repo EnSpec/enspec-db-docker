@@ -23,9 +23,10 @@ CREATE OR REPLACE VIEW boresight_rawdata_dsm_view AS
     bo.heading_offset  as heading_offset,
     bo.rmse  as rmse,
     bo.gcp_file  as gcp_file,
-    r.line_id  as line_id,
-    r.line_no  as line_no,
-    r.quality  as quality,
+    r.quality  as rawdata_quality,
+    r.cold_storage as rd_cold_storage,
+    r.hot_storage as rd_hot_storage,
+    r.hot_storage_expiration as rd_hot_storage_expiration,
     d.dsm_name  as dsm_name,
     ST_AsKML(d.extent_poly)  as extent_poly_kml,
     d.epsg  as epsg,
@@ -49,9 +50,10 @@ CREATE OR REPLACE FUNCTION insert_boresight_rawdata_dsm (
   heading_offset FLOAT,
   rmse FLOAT,
   gcp_file TEXT,
-  line_id FLOAT,
-  line_no FLOAT,
   quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
   dsm_name TEXT,
   extent_poly_kml TEXT,
   epsg FLOAT,
@@ -72,7 +74,7 @@ BEGIN
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
   SELECT get_boresight_offsets_id(calculation_method, roll_offset, pitch_offset, heading_offset, rmse, gcp_file) INTO boid;
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rid;
+  SELECT get_rawdata_id(quality, cold_storage, hot_storage, hot_storage_expiration) INTO rid;
   SELECT get_dsm_id(dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata) INTO dsmid;
 
   INSERT INTO boresight_rawdata_dsm (
@@ -94,9 +96,10 @@ CREATE OR REPLACE FUNCTION update_boresight_rawdata_dsm (
   heading_offset_in FLOAT,
   rmse_in FLOAT,
   gcp_file_in TEXT,
-  line_id_in FLOAT,
-  line_no_in FLOAT,
   quality_in RAWDATA_QUALITY,
+  cold_storage_in TEXT,
+  hot_storage_in TEXT,
+  hot_storage_expiration_in DATE,
   dsm_name_in TEXT,
   extent_poly_kml_in TEXT,
   epsg_in FLOAT,
@@ -110,7 +113,7 @@ dsmid UUID;
 
 BEGIN
   SELECT get_boresight_offsets_id(calculation_method_in, roll_offset_in, pitch_offset_in, heading_offset_in, rmse_in, gcp_file_in) INTO boid;
-  SELECT get_rawdata_id(line_id_in, line_no_in, quality_in) INTO rid;
+  SELECT get_rawdata_id(quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rid;
   SELECT get_dsm_id(dsm_name_in, extent_poly_kml_in, epsg_in, vdatum_in, dsm_file_in, dsm_metadata_in) INTO dsmid;
   UPDATE boresight_rawdata_dsm SET (
     boresight_offsets_id, rawdata_id, dsm_id
@@ -136,9 +139,10 @@ BEGIN
     heading_offset_in := NEW.heading_offset,
     rmse_in := NEW.rmse,
     gcp_file_in := NEW.gcp_file,
-    line_id_in := NEW.line_id,
-    line_no_in := NEW.line_no,
     quality_in := NEW.quality,
+    cold_storage_in := NEW.cold_storage,
+    hot_storage_in := NEW.hot_storage,
+    hot_storage_expiration_in := NEW.hot_storage_expiration,
     dsm_name_in := NEW.dsm_name,
     extent_poly_kml_in := NEW.extent_poly_kml,
     epsg_in := NEW.epsg,
@@ -166,9 +170,10 @@ BEGIN
     heading_offset_in := NEW.heading_offset,
     rmse_in := NEW.rmse,
     gcp_file_in := NEW.gcp_file,
-    line_id_in := NEW.line_id,
-    line_no_in := NEW.line_no,
     quality_in := NEW.quality,
+    cold_storage_in := NEW.cold_storage,
+    hot_storage_in := NEW.hot_storage,
+    hot_storage_expiration_in := NEW.hot_storage_expiration,
     dsm_name_in := NEW.dsm_name,
     extent_poly_kml_in := NEW.extent_poly_kml,
     epsg_in := NEW.epsg,
@@ -191,9 +196,10 @@ CREATE OR REPLACE FUNCTION get_boresight_rawdata_dsm_id(
   heading_offset FLOAT,
   rmse FLOAT,
   gcp_file TEXT,
-  line_id FLOAT,
-  line_no FLOAT,
   quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
   dsm_name TEXT,
   extent_poly_kml TEXT,
   epsg FLOAT,
@@ -208,7 +214,7 @@ rid UUID;
 dsmid UUID;
 BEGIN
   SELECT get_boresight_offsets_id(calculation_method, roll_offset, pitch_offset, heading_offset, rmse, gcp_file) INTO boid;
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rid;
+  SELECT get_rawdata_id(quality, cold_storage, hot_storage, hot_storage_expiration) INTO rid;
   SELECT get_dsm_id(dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata) INTO dsmid;
   SELECT
     boresight_rawdata_dsm_id INTO bid
@@ -221,8 +227,8 @@ BEGIN
 
   IF (bid IS NULL) THEN
     RAISE EXCEPTION 'Unknown boresight_rawdata_dsm: calculation_method="%" roll_offset="%" pitch_offset="%" heading_offset="%" rmse="%" gcp_file="%"
-    line_id="%" line_no="%" quality="%" dsm_name="%" extent_poly_kml="%" epsg="%" vdatum="%" dsm_file="%" dsm_metadata="%"', calculation_method, roll_offset,
-    pitch_offset, heading_offset, rmse, gcp_file, line_id, line_no, quality, dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata;
+    quality="%" cold_storage="%" hot_storage="%" hot_storage_expiration="%" dsm_name="%" extent_poly_kml="%" epsg="%" vdatum="%" dsm_file="%" dsm_metadata="%"', calculation_method, roll_offset,
+    pitch_offset, heading_offset, rmse, gcp_file, quality, cold_storage, hot_storage, hot_storage_expiration, dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata;
   END IF;
 
   RETURN bid;

@@ -14,9 +14,10 @@ CREATE INDEX rawdata_image_output_image_output_id_idx ON rawdata_image_output(im
 CREATE OR REPLACE VIEW rawdata_image_output_view AS
   SELECT
     r.rawdata_image_output_id AS rawdata_image_output_id,
-    rd.line_id AS line_id,
-    rd.line_no AS line_no,
-    rd.quality AS quality,
+    rd.quality AS rawdata_quality,
+    rd.cold_storage AS rd_cold_storage,
+    rd.hot_storage AS rd_hot_storage,
+    rd.hot_storage_expiration AS rd_hot_storage_expiration,
     io.image_dir AS image_dir,
     io.image_dir_owner AS image_dir_owner,
     io.image_exists AS image_exists,
@@ -34,9 +35,10 @@ LEFT JOIN image_output io ON r.image_output_id = io.image_output_id;
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_rawdata_image_output (
   rawdata_image_output_id UUID,
-  line_id FLOAT,
-  line_no FLOAT,
   quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
   image_dir TEXT,
   image_dir_owner TEXT,
   image_exists BOOL,
@@ -50,7 +52,7 @@ DECLARE
   rdid UUID;
   ioid UUID;
 BEGIN
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rdid;
+  SELECT get_rawdata_id(quality, cold_storage, hot_storage, hot_storage_expiration) INTO rdid;
   SELECT get_image_output_id(image_dir, image_dir_owner, image_exists, processing_date, expiration_date, expiration_type) INTO ioid;
 
   IF( rawdata_image_output_id IS NULL ) THEN
@@ -71,15 +73,23 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_rawdata_image_output (
   rawdata_image_output_id_in UUID,
-  rawdata_id_in UUID,
-  image_output_id_in UUID) RETURNS void AS $$
+  quality_in RAWDATA_QUALITY,
+  cold_storage_in TEXT,
+  hot_storage_in TEXT,
+  hot_storage_expiration_in DATE,
+  image_dir_in TEXT,
+  image_dir_owner_in TEXT,
+  image_exists_in BOOL,
+  processing_date_in DATE,
+  expiration_date_in DATE,
+  expiration_type_in IMAGE_OUTPUT_EXPIRATION_TYPE) RETURNS void AS $$
 DECLARE
 rdid UUID;
 ioid UUID;
 
 BEGIN
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rdid;
-  SELECT get_image_output_id(image_dir, image_dir_owner, image_exists, processing_date, expiration_date, expiration_type) INTO ioid;
+  SELECT get_rawdata_id(quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid;
+  SELECT get_image_output_id(image_dir_in, image_dir_owner_in, image_exists_in, processing_date_in, expiration_date_in, expiration_type_in) INTO ioid;
 
   UPDATE rawdata_image_output SET (
     rawdata_id, image_output_id
@@ -99,8 +109,10 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_rawdata_image_output(
     rawdata_image_output_id := NEW.rawdata_image_output_id,
-    rline_no := NEW.line_no,
     quality := NEW.quality,
+    cold_storage := NEW.cold_storage,
+    hot_storage := NEW.hot_storage,
+    hot_storage_expiration := NEW.hot_storage_expiration,
     source_name := NEW.source_name,
     image_dir := NEW.image_dir,
     image_dir_owner := NEW.image_dir_owner,
@@ -123,9 +135,10 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_rawdata_image_output(
     rawdata_image_output_id_in := NEW.rawdata_image_output_id,
-    line_id_in := NEW.line_id,
-    line_no_in := NEW.line_no,
     quality_in := NEW.quality,
+    cold_storage_in := NEW.cold_storage,
+    hot_storage_in := NEW.hot_storage,
+    hot_storage_expiration_in := NEW.hot_storage_expiration,
     image_dir_in := NEW.image_dir,
     image_dir_owner_in := NEW.image_dir_owner,
     image_exists_in := NEW.image_exists,
@@ -142,9 +155,10 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_rawdata_image_output_id(
-  line_id_in float,
-  line_no_in float,
   quality_in RAWDATA_QUALITY,
+  cold_storage_in TEXT,
+  hot_storage_in TEXT,
+  hot_storage_expiration_in DATE,
   image_dir_in TEXT,
   image_dir_owner_in TEXT,
   image_exists_in BOOL,
@@ -157,7 +171,7 @@ DECLARE
   rdid UUID;
   ioid UUID;
 BEGIN
-  SELECT get_rawdata_id(line_id_in, line_no_in, quality_in) INTO rdid;
+  SELECT get_rawdata_id(quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid;
   SELECT get_image_output_id(image_dir_in, image_dir_owner_in, image_exists_in, processing_date_in, expiration_date_in, expiration_type_in) INTO ioid;
 
   SELECT
@@ -169,9 +183,10 @@ BEGIN
     image_output_id = ioid;
 
   IF (rid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown rawdata_image_output: line_id="%" line_no="%" quality="%" image_dir="%"
+    RAISE EXCEPTION 'Unknown rawdata_image_output: rawdata_quality="%" rd_cold_storage="%" rd_hot_storage="%" rd_hot_storage_expiration="%" image_dir="%"
     image_dir_owner="%" image_exists="%" processing_date="%" expiration_date="%" expiration_type="%"',
-    line_id_in, line_no_in, quality_in, image_dir_in, image_dir_owner_in, image_exists_in, processing_date_in, expiration_date_in, expiration_type_in;
+    quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in, image_dir_in, image_dir_owner_in, image_exists_in, processing_date_in,
+    expiration_date_in, expiration_type_in;
   END IF;
 
   RETURN rid;

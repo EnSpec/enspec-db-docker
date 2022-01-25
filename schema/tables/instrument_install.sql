@@ -20,6 +20,7 @@ CREATE OR REPLACE VIEW instrument_install_view AS
     instr.model as model,
     instr.serial_number as serial_number,
     instr.type as type,
+    instr.asset_tag as asset_tag,
     instl.install_date  as install_date,
     instl.removal_date  as removal_date,
     instl.dir_location  as dir_location,
@@ -43,6 +44,7 @@ CREATE OR REPLACE FUNCTION insert_instrument_install (
   model INSTRUMENT_MODEL,
   serial_number TEXT,
   type INSTRUMENT_TYPE,
+  asset_tag TEXT,
   install_date DATE,
   removal_date DATE,
   dir_location TEXT,
@@ -63,7 +65,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO instrument_install_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_instruments_id(make, model, serial_number, type) INTO instr_id;
+  SELECT get_instruments_id(make, model, serial_number, type, asset_tag) INTO instr_id;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO instl_id;
   SELECT get_calibration_id(calib_date, calib_facility, calib_technician, calib_file, expiration_date) INTO cid;
 
@@ -84,6 +86,7 @@ CREATE OR REPLACE FUNCTION update_instrument_install (
   model INSTRUMENT_MODEL,
   serial_number TEXT,
   type INSTRUMENT_TYPE,
+  asset_tag TEXT,
   install_date DATE,
   removal_date DATE,
   dir_location TEXT,
@@ -98,7 +101,7 @@ DECLARE
   cid UUID;
 
 BEGIN
-  SELECT get_instruments_id(make, model, serial_number, type) INTO instr_id;
+  SELECT get_instruments_id(make, model, serial_number, type, asset_tag) INTO instr_id;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO instl_id;
   SELECT get_calibration_id(calib_date, calib_facility, calib_technician, calib_file, expiration_date) INTO cid;
 
@@ -124,6 +127,7 @@ BEGIN
     model := NEW.model,
     serial_number := NEW.serial_number,
     type := NEW.type,
+    asset_tag := NEW.asset_tag,
     install_date := NEW.install_date,
     removal_date := NEW.removal_date,
     dir_location := NEW.dir_location,
@@ -150,6 +154,7 @@ BEGIN
     model := NEW.model,
     serial_number := NEW.serial_number,
     type := NEW.type,
+    asset_tag := NEW.asset_tag,
     install_date := NEW.install_date,
     removal_date := NEW.removal_date,
     dir_location := NEW.dir_location,
@@ -172,6 +177,7 @@ CREATE OR REPLACE FUNCTION get_instrument_install_id(
   model INSTRUMENT_MODEL,
   serial_number text,
   type INSTRUMENT_TYPE,
+  asset_tag TEXT,
   install_date date,
   removal_date date,
   dir_location text,
@@ -186,7 +192,7 @@ DECLARE
   instl_id UUID;
   cid UUID;
 BEGIN
-  SELECT get_instruments_id(make, model, serial_number, type) INTO instr_id;
+  SELECT get_instruments_id(make, model, serial_number, type, asset_tag) INTO instr_id;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO instl_id;
   SELECT get_calibration_id(calib_date, calib_facility, calib_technician, calib_file, expiration_date) INTO cid;
   IF (cid is NULL) THEN
@@ -209,9 +215,9 @@ BEGIN
   END IF;
 
   IF (iid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown instrument_install: make="%" model="%" serial_number="%" type="%" install_date="%"
+    RAISE EXCEPTION 'Unknown instrument_install: make="%" model="%" serial_number="%" type="%" asset_tag="%" install_date="%"
     removal_date="%" dir_location="%" calib_date="%" calib_facility="%" calib_technician="%" calib_file="%" expiration_date="%"',
-    make, model, serial_number, type, install_date, removal_date, dir_location, calib_date, calib_facility, calib_technician, calib_file, expiration_date;
+    make, model, serial_number, type, asset_tag, install_date, removal_date, dir_location, calib_date, calib_facility, calib_technician, calib_file, expiration_date;
   END IF;
 
   RETURN iid;

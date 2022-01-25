@@ -25,14 +25,15 @@ CREATE OR REPLACE VIEW rawdata_metadata_view AS
     s.start_time  as start_time,
     s.end_time  as end_time,
     s.line_count  as line_count,
-    s.bad_lines  as bad_lines,
+    s.session_notes  as session_notes,
     i.make as make,
     i.model as model,
     i.serial_number as serial_number,
     i.type as type,
-    rd.line_id  as line_id,
-    rd.line_no  as line_no,
-    rd.quality  as line_quality,
+    rd.quality  as rawdata_quality,
+    rd.cold_storage as cold_storage,
+    rd.hot_storage as hot_storage,
+    rd.hot_storage_expiration as hot_storage_expiration,
     v.variable_name  as variable_name,
     v.variable_type  as variable_type,
     u.units_name  as units_name,
@@ -57,14 +58,15 @@ CREATE OR REPLACE FUNCTION insert_rawdata_metadata (
   start_time TIME,
   end_time TIME,
   line_count FLOAT,
-  bad_lines TEXT,
+  session_notes TEXT,
   make INSTRUMENT_MAKE,
   model INSTRUMENT_MODEL,
   serial_number TEXT,
   type INSTRUMENT_TYPE,
-  line_id FLOAT,
-  line_no FLOAT,
-  line_quality RAWDATA_QUALITY,
+  rawdata_quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
   variable_name TEXT,
   variable_type TEXT,
   units_name TEXT,
@@ -86,9 +88,9 @@ BEGIN
     SELECT uuid_generate_v4() INTO rawdata_metadata_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_sessions_id(session_name, start_time, end_time, line_count, bad_lines) INTO sid;
+  SELECT get_sessions_id(session_name, start_time, end_time, line_count, session_notes) INTO sid;
   SELECT get_instruments_id(make, model, serial_number, type) INTO iid;
-  SELECT get_rawdata_id(line_id, line_no, line_quality) INTO rdid;
+  SELECT get_rawdata_id(rawdata_quality, cold_storage, hot_storage, hot_storage_expiration) INTO rdid;
   SELECT get_variables_id(variable_name, variable_type) INTO vid;
   SELECT get_units_id(units_name, units_type, units_description) INTO uid;
 
@@ -109,14 +111,15 @@ CREATE OR REPLACE FUNCTION update_rawdata_metadata (
   start_time_in TIME,
   end_time_in TIME,
   line_count_in FLOAT,
-  bad_lines_in TEXT,
+  session_notes_in TEXT,
   make_in INSTRUMENT_MAKE,
   model_in INSTRUMENT_MODEL,
   serial_number_in TEXT,
   type_in INSTRUMENT_TYPE,
-  line_id_in FLOAT,
-  line_no_in FLOAT,
-  line_quality_in RAWDATA_QUALITY,
+  rawdata_quality_in RAWDATA_QUALITY,
+  cold_storage_in TEXT,
+  hot_storage_in TEXT,
+  hot_storage_expiration_in DATE,
   variable_name_in TEXT,
   variable_type_in TEXT,
   units_name_in TEXT,
@@ -131,9 +134,9 @@ vid UUID;
 uid UUID;
 
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in) INTO sid;
+  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sid;
   SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
-  SELECT get_rawdata_id(line_id_in, line_no_in, line_quality_in) INTO rdid;
+  SELECT get_rawdata_id(rawdata_quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid;
   SELECT get_variables_id(variable_name_in, variable_type_in) INTO vid;
   SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO uid;
   UPDATE rawdata_metadata SET (
@@ -158,14 +161,15 @@ BEGIN
     start_time := NEW.start_time,
     end_time := NEW.end_time,
     line_count := NEW.line_count,
-    bad_lines := NEW.bad_lines,
+    session_notes := NEW.session_notes,
     make := NEW.make,
     model := NEW.model,
     serial_number := NEW.serial_number,
     type := NEW.type,
-    line_id := NEW.line_id,
-    line_no := NEW.line_no,
-    quality := NEW.quality,
+    rawdata_quality := NEW.rawdata_quality,
+    cold_storage := NEW.cold_storage,
+    hot_storage := NEW.hot_storage,
+    hot_storage_expiration := NEW.hot_storage_expiration,
     variable_name := NEW.variable_name,
     variable_type := NEW.variable_type,
     units_name := NEW.units_name,
@@ -191,14 +195,15 @@ BEGIN
     start_time_in := NEW.start_time,
     end_time_in := NEW.end_time,
     line_count_in := NEW.line_count,
-    bad_lines_in := NEW.bad_lines,
+    session_notes_in := NEW.session_notes,
     make_in := NEW.make,
     model_in := NEW.model,
     serial_number_in := NEW.serial_number,
     type_in := NEW.type,
-    line_id_in := NEW.line_id,
-    line_no_in := NEW.line_no,
-    quality_in := NEW.quality,
+    rawdata_quality_in := NEW.rawdata_quality,
+    cold_storage_in := NEW.cold_storage,
+    hot_storage_in := NEW.hot_storage,
+    hot_storage_expiration_in := NEW.hot_storage_expiration,
     variable_name_in := NEW.variable_name,
     variable_type_in := NEW.variable_type,
     units_name_in := NEW.units_name,
@@ -215,9 +220,9 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_rawdata_metadata_id(session_name_in text, start_time_in time, end_time_in time, line_count_in float, bad_lines_in text,
+CREATE OR REPLACE FUNCTION get_rawdata_metadata_id(session_name_in text, start_time_in time, end_time_in time, line_count_in float, session_notes_in text,
   make_in INSTRUMENT_MAKE, model_in INSTRUMENT_MODEL, serial_number_in TEXT, type_in INSTRUMENT_TYPE,
-  line_id_in float, line_no_in float, quality_in RAWDATA_QUALITY,
+  rawdata_quality_in RAWDATA_QUALITY, cold_storage_in TEXT, hot_storage_in TEXT, hot_storage_expiration_in DATE,
   variable_name_in text, variable_type_in text, units_name_in text, units_type_in text, units_description_in text, value_in float) RETURNS UUID AS $$
 DECLARE
   rid UUID;
@@ -227,9 +232,9 @@ DECLARE
   vid UUID;
   uid UUID;
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in) INTO sid;
+  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sid;
   SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
-  SELECT get_rawdata_id(line_id_in, line_no_in, line_quality_in) INTO rdid;
+  SELECT get_rawdata_id(rawdata_quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid;
   SELECT get_variables_id(variable_name_in, variable_type_in) INTO vid;
   SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO uid;
   SELECT
@@ -245,10 +250,10 @@ BEGIN
     value = value_in;
 
   IF (rid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown rawdata_metadata: session_name="%" start_time="%" end_time="%" line_count="%" bad_lines="%"
-    serial_number="%" line_id="%" line_no="%" quality="%" variable_name="%" variable_type="%" units_name="%"
+    RAISE EXCEPTION 'Unknown rawdata_metadata: session_name="%" start_time="%" end_time="%" line_count="%" session_notes="%"
+    serial_number="%" rawdata_quality="%" cold_storage="%" hot_storage="%" hot_storage_expiration="%" variable_name="%" variable_type="%" units_name="%"
     units_type="%" units_description="%" value="%"', session_name_in, start_time_in, end_time_in, line_count_in,
-    bad_lines_in, serial_number_in, line_id_in, line_no_in, quality_in, variable_name_in, variable_type_in,
+    session_notes_in, serial_number_in, rawdata_quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in, variable_name_in, variable_type_in,
     units_name_in, units_type_in, units_description_in, value_in;
   END IF;
 

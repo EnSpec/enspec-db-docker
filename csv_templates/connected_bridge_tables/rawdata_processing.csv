@@ -1,2 +1,2 @@
-line_id,line_no,quality,system,software_version,job_type,input_dir,proc_params
-FLOAT,FLOAT,'Green' or 'Yellow' or 'Red',TEXT,TEXT,TEXT,TEXT,TEXT
+quality,cold_storage,hot_storage,hot_storage_expiration,system,software_version,job_type,input_dir,proc_params
+'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE,TEXT,TEXT,TEXT,TEXT,TEXT

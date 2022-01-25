@@ -7,6 +7,7 @@ CREATE TABLE instruments (
   model INSTRUMENT_MODEL NOT NULL,
   serial_number TEXT UNIQUE NOT NULL,
   type INSTRUMENT_TYPE NOT NULL,
+  asset_tag TEXT NOT NULL,
   UNIQUE(make, model, type)
 );
 CREATE INDEX instruments_source_id_idx ON instruments(source_id);
@@ -19,6 +20,7 @@ CREATE OR REPLACE VIEW instruments_view AS
     i.model as model,
     i.serial_number as serial_number,
     i.type as type,
+    i.asset_tag as asset_tag,
 
     sc.name AS source_name
   FROM
@@ -32,6 +34,7 @@ CREATE OR REPLACE FUNCTION insert_instruments (
   model INSTRUMENT_MODEL,
   serial_number TEXT,
   type INSTRUMENT_TYPE,
+  asset_tag TEXT,
 
   source_name TEXT) RETURNS void AS $$
 DECLARE
@@ -44,9 +47,9 @@ BEGIN
   SELECT get_source_id(source_name) INTO source_id;
 
   INSERT INTO instruments (
-    instruments_id, make, model, serial_number, type, source_id
+    instruments_id, make, model, serial_number, type, asset_tag, source_id
   ) VALUES (
-    instruments_id, make, model, serial_number, type, source_id
+    instruments_id, make, model, serial_number, type, asset_tag, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -59,13 +62,14 @@ CREATE OR REPLACE FUNCTION update_instruments (
   make_in INSTRUMENT_MAKE,
   model_in INSTRUMENT_MODEL,
   serial_number_in TEXT,
-  type_in INSTRUMENT_TYPE) RETURNS void AS $$
+  type_in INSTRUMENT_TYPE,
+  asset_tag_in TEXT) RETURNS void AS $$
 BEGIN
 
   UPDATE instruments SET (
-    make, model, serial_number, type
+    make, model, serial_number, type, asset_tag
   ) = (
-    make_in, model_in, serial_number_in, type_in
+    make_in, model_in, serial_number_in, type_in, asset_tag_in
   ) WHERE
     instruments_id = instruments_id_in;
 
@@ -84,6 +88,7 @@ BEGIN
     model := NEW.model,
     serial_number := NEW.serial_number,
     type := NEW.type,
+    asset_tag := NEW.asset_tag,
 
     source_name := NEW.source_name
   );
@@ -102,7 +107,8 @@ BEGIN
     make_in := NEW.make,
     model_in := NEW.model,
     serial_number_in := NEW.serial_number,
-    type_in := NEW.type
+    type_in := NEW.type,
+    asset_tag_in := NEW.asset_tag
   );
   RETURN NEW;
 
@@ -112,7 +118,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_instruments_id(make_in INSTRUMENT_MAKE, model_in INSTRUMENT_MODEL, serial_number_in TEXT, type_in INSTRUMENT_TYPE) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_instruments_id(make_in INSTRUMENT_MAKE, model_in INSTRUMENT_MODEL, serial_number_in TEXT, type_in INSTRUMENT_TYPE, asset_tag TEXT) RETURNS UUID AS $$
 DECLARE
   iid UUID;
 BEGIN

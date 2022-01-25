@@ -21,7 +21,6 @@ CREATE OR REPLACE VIEW sessions_metadata_view AS
     sess.start_time as start_time,
     sess.end_time as end_time,
     sess.line_count as line_count,
-    sess.bad_lines as bad_lines,
     sess.session_notes as session_notes,
     v.variable_name  as variable_name,
     v.variable_type  as variable_type,
@@ -45,7 +44,6 @@ CREATE OR REPLACE FUNCTION insert_sessions_metadata (
   start_time TIME,
   end_time TIME,
   line_count FLOAT,
-  bad_lines TEXT,
   session_notes TEXT,
   variable_name TEXT,
   variable_type TEXT,
@@ -66,7 +64,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO sessions_metadata_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_sessions_id(session_name, start_time, end_time, line_count, bad_lines, session_notes) INTO sess_id;
+  SELECT get_sessions_id(session_name, start_time, end_time, line_count, session_notes) INTO sess_id;
   SELECT get_variables_id(variable_name, variable_type) INTO v_id;
   SELECT get_units_id(units_name, units_type, units_description) INTO u_id;
 
@@ -87,7 +85,6 @@ CREATE OR REPLACE FUNCTION update_sessions_metadata (
   start_time_in TIME,
   end_time_in TIME,
   line_count_in FLOAT,
-  bad_lines_in TEXT,
   session_notes_in TEXT,
   variable_name_in TEXT,
   variable_type_in TEXT,
@@ -101,7 +98,7 @@ DECLARE
   u_id UUID;
 
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in) INTO sess_id;
+  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sess_id;
   SELECT get_variables_id(variable_name_in, variable_type_in) INTO v_id;
   SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO u_id;
 
@@ -127,7 +124,6 @@ BEGIN
     start_time := NEW.start_time,
     end_time := NEW.end_time,
     line_count := NEW.line_count,
-    bad_lines := NEW.bad_lines,
     session_notes := NEW.session_notes,
     variable_name := NEW.variable_name,
     variable_type := NEW.variable_type,
@@ -154,7 +150,6 @@ BEGIN
     start_time_in := NEW.start_time,
     end_time_in := NEW.end_time,
     line_count_in := NEW.line_count,
-    bad_lines_in := NEW.bad_lines,
     session_notes_in := NEW.session_notes,
     variable_name_in := NEW.variable_name,
     variable_type_in := NEW.variable_type,
@@ -172,7 +167,7 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_sessions_metadata_id(
-  session_name_in text, start_time_in time, end_time_in time, line_count_in float, bad_lines_in text, session_notes_in text,
+  session_name_in text, start_time_in time, end_time_in time, line_count_in float, session_notes_in text,
   variable_name_in text, variable_type_in text, units_name_in text, units_type_in text, units_description_in text, value_in float) RETURNS UUID AS $$
 DECLARE
   sid UUID;
@@ -180,7 +175,7 @@ DECLARE
   u_id UUID;
   sess_id UUID;
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in) INTO sess_id;
+  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sess_id;
   SELECT get_variables_id(variable_name_in, variable_type_in) INTO v_id;
   SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO u_id;
   SELECT
@@ -194,9 +189,9 @@ BEGIN
     value = value_in;
 
   IF (sid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown sessions_metadata: session_name="%" start_time="%" end_time="%" line_count="%" bad_lines="%" session_notes="%"
+    RAISE EXCEPTION 'Unknown sessions_metadata: session_name="%" start_time="%" end_time="%" line_count="%" session_notes="%"
     variable_name="%" variable_type="%" units_name="%" units_type="%" units_description="%" value="%"', session_name_in,
-    start_time_in, end_time_in, line_count_in, bad_lines_in, session_notes_in, variable_name_in, variable_type_in, units_name_in,
+    start_time_in, end_time_in, line_count_in, session_notes_in, variable_name_in, variable_type_in, units_name_in,
     units_type_in, units_description_in, value_in;
   END IF;
 

@@ -1,0 +1,2 @@
+session_name,session_start_time,session_end_time,session_line_count,session_notes,flightline_start_time,flightline_end_time,flightline_media_files,line_notes
+TEXT,TIME,TIME,FLOAT,TEXT (can be empty),TIME,TIME,TEXT,TEXT

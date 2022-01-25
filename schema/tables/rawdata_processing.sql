@@ -14,9 +14,10 @@ CREATE INDEX rawdata_processing_processing_events_id_idx ON rawdata_processing(p
 CREATE OR REPLACE VIEW rawdata_processing_view AS
   SELECT
     r.rawdata_processing_id AS rawdata_processing_id,
-    rd.line_id AS line_id,
-    rd.line_no AS line_no,
     rd.quality AS quality,
+    rd.cold_storage AS cold_storage,
+    rd.hot_storage AS hot_storage,
+    rd.hot_storage_expiration AS hot_storage_expiration,
     pe.system AS system,
     pe.software_version AS software_version,
     pe.job_type AS job_type,
@@ -33,9 +34,10 @@ LEFT JOIN processing_events pe ON r.processing_events_id = pe.processing_events_
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_rawdata_processing (
   rawdata_processing_id UUID,
-  line_id FLOAT,
-  line_no FLOAT,
   quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
   system TEXT,
   software_version TEXT,
   job_type TEXT,
@@ -48,7 +50,7 @@ DECLARE
   rdid UUID;
   peid UUID;
 BEGIN
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rdid;
+  SELECT get_rawdata_id(quality, cold_storage, hot_storage, hot_storage_expiration) INTO rdid;
   SELECT get_processing_events_id(system, software_version, job_type, input_dir, proc_params) INTO peid;
 
   IF( rawdata_processing_id IS NULL ) THEN
@@ -69,9 +71,10 @@ $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE FUNCTION update_rawdata_processing (
   rawdata_processing_id_in UUID,
-  line_id_in FLOAT,
-  line_no_in FLOAT,
   quality_in RAWDATA_QUALITY,
+  cold_storage_in TEXT,
+  hot_storage_in TEXT,
+  hot_storage_expiration_in DATE,
   system_in TEXT,
   software_version_in TEXT,
   job_type_in TEXT,
@@ -82,8 +85,8 @@ rdid_in UUID;
 peid_in UUID;
 
 BEGIN
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rdid_in;
-  SELECT get_processing_events_id(system, software_version, job_type, input_dir, proc_params) INTO peid_in;
+  SELECT get_rawdata_id(quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid_in;
+  SELECT get_processing_events_id(system_in, software_version_in, job_type_in, input_dir_in, proc_params_in) INTO peid_in;
 
   UPDATE rawdata_processing SET (
     rawdata_id, processing_events_id
@@ -103,9 +106,10 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_rawdata_processing(
     rawdata_processing_id := NEW.rawdata_processing_id,
-    line_id := NEW.line_id,
-    line_no := NEW.line_no,
     quality := NEW.quality,
+    cold_storage := NEW.cold_storage,
+    hot_storage := NEW.hot_storage,
+    hot_storage_expiration := NEW.hot_storage_expiration,
     system := NEW.system,
     software_version := NEW.software_version,
     job_type := NEW.job_type,
@@ -126,9 +130,10 @@ RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_rawdata_processing(
     rawdata_processing_id_in := NEW.rawdata_processing_id,
-    line_id_in := NEW.line_id,
-    line_no_in := NEW.line_no,
     quality_in := NEW.quality,
+    cold_storage_in := NEW.cold_storage,
+    hot_storage_in := NEW.hot_storage,
+    hot_storage_expiration_in := NEW.hot_storage_expiration,
     system_in := NEW.system,
     software_version_in := NEW.software_version,
     job_type_in := NEW.job_type,
@@ -144,9 +149,10 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_rawdata_processing_id(
-  line_id FLOAT,
-  line_no FLOAT,
   quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
   system TEXT,
   software_version TEXT,
   job_type TEXT,
@@ -158,7 +164,7 @@ DECLARE
   rdid UUID;
   peid UUID;
 BEGIN
-  SELECT get_rawdata_id(line_id, line_no, quality) INTO rdid;
+  SELECT get_rawdata_id(quality, cold_storage, hot_storage, hot_storage_expiration) INTO rdid;
   SELECT get_processing_events_id(system, software_version, job_type, input_dir, proc_params) INTO peid;
   SELECT
     rawdata_processing_id INTO rid
@@ -169,8 +175,8 @@ BEGIN
     processing_events_id = peid;
 
   IF (rid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown rawdata_processing: line_id="%" line_no="%" quality="%" system="%" software_version="%" job_type="%" input_dir="%" proc_params="%"',
-    line_id, line_no, quality, system, software_version, job_type, input_dir, proc_params;
+    RAISE EXCEPTION 'Unknown rawdata_processing: quality="%" cold_storage="%" hot_storage="%" hot_storage_expiration="%" system="%" software_version="%" job_type="%" input_dir="%" proc_params="%"',
+    quality, cold_storage, hot_storage, hot_storage_expiration, system, software_version, job_type, input_dir, proc_params;
   END IF;
 
   RETURN rid;
