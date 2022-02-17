@@ -3,101 +3,75 @@ DROP TABLE IF EXISTS rawdata_metadata CASCADE;
 CREATE TABLE rawdata_metadata (
   rawdata_metadata_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
-  sessions_id UUID REFERENCES sessions NOT NULL,
-  instruments_id UUID REFERENCES instruments NOT NULL,
-  rawdata_id UUID REFERENCES rawdata NOT NULL,
-  variables_id UUID REFERENCES variables NOT NULL,
-  units_id UUID REFERENCES units NOT NULL,
-  value FLOAT NOT NULL
+  flightlines_id UUID REFERENCES flightlines NOT NULL,
+  capture_time TIME NOT NULL,
+  quality RAWDATA_QUALITY NOT NULL,
+  cold_storage TEXT,
+  hot_storage TEXT NOT NULL,
+  hot_storage_expiration DATE
 );
 CREATE INDEX rawdata_metadata_source_id_idx ON rawdata_metadata(source_id);
-CREATE INDEX rawdata_metadata_sessions_id_idx ON rawdata_metadata(sessions_id);
-CREATE INDEX rawdata_metadata_instruments_id_idx ON rawdata_metadata(instruments_id);
-CREATE INDEX rawdata_metadata_rawdata_id_idx ON rawdata_metadata(rawdata_id);
-CREATE INDEX rawdata_metadata_variables_id_idx ON rawdata_metadata(variables_id);
-CREATE INDEX rawdata_metadata_units_id_idx ON rawdata_metadata(units_id);
+
+ALTER TABLE rawdata_metadata ADD CONSTRAINT uniq_rd_row UNIQUE(flightlines_id, capture_time);
 
 -- VIEW
 CREATE OR REPLACE VIEW rawdata_metadata_view AS
   SELECT
     r.rawdata_metadata_id AS rawdata_metadata_id,
-    s.session_name  as session_name,
-    s.start_time  as start_time,
-    s.end_time  as end_time,
-    s.line_count  as line_count,
-    s.session_notes  as session_notes,
-    i.make as make,
-    i.model as model,
-    i.serial_number as serial_number,
-    i.type as type,
-    rd.quality  as rawdata_quality,
-    rd.cold_storage as cold_storage,
-    rd.hot_storage as hot_storage,
-    rd.hot_storage_expiration as hot_storage_expiration,
-    v.variable_name  as variable_name,
-    v.variable_type  as variable_type,
-    u.units_name  as units_name,
-    u.units_type  as units_type,
-    u.units_description  as units_description,
-
-    r.value as value,
+    f.flight_date AS flight_date,
+    f.pilot AS pilot,
+    f.operator AS operator,
+    f.liftoff_time AS liftoff_time,
+    s.session_name AS session_name,
+    s.line_count AS line_count,
+    fl.line_number AS line_number,
+    r.capture_time AS capture_time,
+    r.quality  as quality,
+    r.cold_storage as cold_storage,
+    r.hot_storage as hot_storage,
+    r.hot_storage_expiration as hot_storage_expiration,
     sc.name AS source_name
   FROM
     rawdata_metadata r
-LEFT JOIN source sc ON r.source_id = sc.source_id
-LEFT JOIN sessions s ON r.sessions_id = s.sessions_id
-LEFT JOIN instruments i ON r.instruments_id = i.instruments_id
-LEFT JOIN rawdata rd ON r.rawdata_id = rd.rawdata_id
-LEFT JOIN variables v ON r.variables_id = v.variables_id
-LEFT JOIN units u ON r.units_id = u.units_id;
+LEFT JOIN flightlines fl ON fl.flightlines_id = r.flightlines_id
+LEFT JOIN sessions s ON s.sessions_id = fl.sessions_id
+LEFT JOIN flights f ON s.flights_id = f.flights_id
+LEFT JOIN source sc ON r.source_id = sc.source_id;
 
 -- FUNCTIONS
 CREATE OR REPLACE FUNCTION insert_rawdata_metadata (
   rawdata_metadata_id UUID,
+  flight_date DATE,
+  pilot TEXT,
+  operator TEXT,
+  liftoff_time TIME,
   session_name TEXT,
-  start_time TIME,
-  end_time TIME,
   line_count FLOAT,
-  session_notes TEXT,
-  make INSTRUMENT_MAKE,
-  model INSTRUMENT_MODEL,
-  serial_number TEXT,
-  type INSTRUMENT_TYPE,
-  rawdata_quality RAWDATA_QUALITY,
+  line_number FLOAT,
+  capture_time TIME,
+  quality RAWDATA_QUALITY,
   cold_storage TEXT,
   hot_storage TEXT,
   hot_storage_expiration DATE,
-  variable_name TEXT,
-  variable_type TEXT,
-  units_name TEXT,
-  units_type TEXT,
-  units_description TEXT,
-
-  value FLOAT,
   source_name TEXT) RETURNS void AS $$
 DECLARE
   source_id UUID;
+  fl_id UUID;
   sid UUID;
-  iid UUID;
-  rdid UUID;
-  vid UUID;
-  uid UUID;
+  fid UUID;
 BEGIN
-
   IF( rawdata_metadata_id IS NULL ) THEN
     SELECT uuid_generate_v4() INTO rawdata_metadata_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_sessions_id(session_name, start_time, end_time, line_count, session_notes) INTO sid;
-  SELECT get_instruments_id(make, model, serial_number, type) INTO iid;
-  SELECT get_rawdata_id(rawdata_quality, cold_storage, hot_storage, hot_storage_expiration) INTO rdid;
-  SELECT get_variables_id(variable_name, variable_type) INTO vid;
-  SELECT get_units_id(units_name, units_type, units_description) INTO uid;
+  SELECT get_flights_id(flight_date, pilot, operator, liftoff_time) INTO fid;
+  SELECT get_lightweight_sessions_id(fid,session_name) INTO sid;
+  SELECT get_epi_flightlines_id(sid, line_number) INTO fl_id;
 
   INSERT INTO rawdata_metadata (
-    rawdata_metadata_id, sessions_id, instruments_id, rawdata_id, variables_id, units_id, value, source_id
+    rawdata_metadata_id, flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration, source_id
   ) VALUES (
-    rawdata_metadata_id, sid, iid, rdid, vid, uid, value, source_id
+    rawdata_metadata_id, fl_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
@@ -105,44 +79,63 @@ EXCEPTION WHEN raise_exception THEN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION insert_epi_rawdata_metadata (
+  rawdata_metadata_id UUID,
+  flightlines_id UUID,
+  capture_time TIME,
+  quality RAWDATA_QUALITY,
+  cold_storage TEXT,
+  hot_storage TEXT,
+  hot_storage_expiration DATE,
+  source_name TEXT) RETURNS void AS $$
+DECLARE
+  source_id UUID;
+BEGIN
+
+  IF( rawdata_metadata_id IS NULL ) THEN
+    SELECT uuid_generate_v4() INTO rawdata_metadata_id;
+  END IF;
+  SELECT get_source_id(source_name) INTO source_id;
+
+  INSERT INTO rawdata_metadata (
+    rawdata_metadata_id, flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration, source_id
+  ) VALUES (
+    rawdata_metadata_id, flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration, source_id
+  );
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION update_rawdata_metadata (
   rawdata_metadata_id_in UUID,
+  flight_date_in DATE,
+  pilot_in TEXT,
+  operator_in TEXT,
+  liftoff_time_in TIME,
   session_name_in TEXT,
-  start_time_in TIME,
-  end_time_in TIME,
   line_count_in FLOAT,
-  session_notes_in TEXT,
-  make_in INSTRUMENT_MAKE,
-  model_in INSTRUMENT_MODEL,
-  serial_number_in TEXT,
-  type_in INSTRUMENT_TYPE,
-  rawdata_quality_in RAWDATA_QUALITY,
+  line_number_in FLOAT,
+  capture_time_in TIME,
+  quality_in RAWDATA_QUALITY,
   cold_storage_in TEXT,
   hot_storage_in TEXT,
-  hot_storage_expiration_in DATE,
-  variable_name_in TEXT,
-  variable_type_in TEXT,
-  units_name_in TEXT,
-  units_type_in TEXT,
-  units_description_in TEXT,
-  value_in FLOAT) RETURNS void AS $$
+  hot_storage_expiration_in DATE) RETURNS void AS $$
 DECLARE
+fid UUID;
 sid UUID;
-iid UUID;
-rdid UUID;
-vid UUID;
-uid UUID;
-
+fl_id UUID;
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sid;
-  SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
-  SELECT get_rawdata_id(rawdata_quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid;
-  SELECT get_variables_id(variable_name_in, variable_type_in) INTO vid;
-  SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO uid;
+  SELECT get_flights_id(flight_date_in, pilot_in, operator_in, liftoff_time_in) INTO fid;
+  SELECT get_lightweight_sessions_id(fid,session_name_in) INTO sid;
+  SELECT get_lightweight_flightlines_id(sid, line_number_in) INTO fl_id;
+
   UPDATE rawdata_metadata SET (
-    sessions_id, instruments_id, rawdata_id, variables_id, units_id, value
+    flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration
   ) = (
-    sid, iid, rdid, vid, uid, value_in
+    fl_id, capture_time_in, quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in
   ) WHERE
     rawdata_metadata_id = rawdata_metadata_id_in;
 
@@ -151,32 +144,47 @@ EXCEPTION WHEN raise_exception THEN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION update_epi_rawdata_metadata (
+  rawdata_metadata_id_in UUID,
+  flightlines_id_in UUID,
+  capture_time_in TIME,
+  quality_in RAWDATA_QUALITY,
+  cold_storage_in TEXT,
+  hot_storage_in TEXT,
+  hot_storage_expiration_in DATE) RETURNS void AS $$
+BEGIN
+
+  UPDATE rawdata_metadata SET (
+    flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration
+  ) = (
+    flightlines_id_in, capture_time_in, quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in
+  ) WHERE
+    rawdata_metadata_id = rawdata_metadata_id_in;
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END;
+$$ LANGUAGE plpgsql;
+
+
 -- FUNCTION TRIGGERS
 CREATE OR REPLACE FUNCTION insert_rawdata_metadata_from_trig()
 RETURNS TRIGGER AS $$
 BEGIN
   PERFORM insert_rawdata_metadata(
     rawdata_metadata_id := NEW.rawdata_metadata_id,
+    flight_date := NEW.flight_date,
+    pilot := NEW.pilot,
+    operator := NEW.operator,
+    liftoff_time := NEW.liftoff_time,
     session_name := NEW.session_name,
-    start_time := NEW.start_time,
-    end_time := NEW.end_time,
     line_count := NEW.line_count,
-    session_notes := NEW.session_notes,
-    make := NEW.make,
-    model := NEW.model,
-    serial_number := NEW.serial_number,
-    type := NEW.type,
-    rawdata_quality := NEW.rawdata_quality,
+    line_number := NEW.line_number,
+    capture_time := NEW.capture_time,
+    quality := NEW.quality,
     cold_storage := NEW.cold_storage,
     hot_storage := NEW.hot_storage,
     hot_storage_expiration := NEW.hot_storage_expiration,
-    variable_name := NEW.variable_name,
-    variable_type := NEW.variable_type,
-    units_name := NEW.units_name,
-    units_type := NEW.units_type,
-    units_description := NEW.units_description,
-
-    value := NEW.value,
     source_name := NEW.source_name
   );
   RETURN NEW;
@@ -186,31 +194,63 @@ EXCEPTION WHEN raise_exception THEN
 END;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION insert_epi_rawdata_metadata_from_trig()
+RETURNS TRIGGER AS $$
+BEGIN
+  PERFORM insert_epi_rawdata_metadata(
+    rawdata_metadata_id := NEW.rawdata_metadata_id,
+    flightlines_id := NEW.flightlines_id,
+    capture_time := NEW.capture_time,
+    quality := NEW.quality,
+    cold_storage := NEW.cold_storage,
+    hot_storage := NEW.hot_storage,
+    hot_storage_expiration := NEW.hot_storage_expiration,
+    source_name := NEW.source_name
+  );
+  RETURN NEW;
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END;
+$$ LANGUAGE plpgsql;
+
+
 CREATE OR REPLACE FUNCTION update_rawdata_metadata_from_trig()
 RETURNS TRIGGER AS $$
 BEGIN
   PERFORM update_rawdata_metadata(
     rawdata_metadata_id_in := NEW.rawdata_metadata_id,
+    flight_date_in := NEW.flight_date,
+    pilot_in := NEW.pilot,
+    operator_in := NEW.operator,
+    liftoff_time_in := NEW.liftoff_time,
     session_name_in := NEW.session_name,
-    start_time_in := NEW.start_time,
-    end_time_in := NEW.end_time,
     line_count_in := NEW.line_count,
-    session_notes_in := NEW.session_notes,
-    make_in := NEW.make,
-    model_in := NEW.model,
-    serial_number_in := NEW.serial_number,
-    type_in := NEW.type,
-    rawdata_quality_in := NEW.rawdata_quality,
+    line_number_in := NEW.line_number,
+    capture_time_in := NEW.capture_time,
+    quality_in := NEW.quality,
     cold_storage_in := NEW.cold_storage,
     hot_storage_in := NEW.hot_storage,
-    hot_storage_expiration_in := NEW.hot_storage_expiration,
-    variable_name_in := NEW.variable_name,
-    variable_type_in := NEW.variable_type,
-    units_name_in := NEW.units_name,
-    units_type_in := NEW.units_type,
-    units_description_in := NEW.units_description,
+    hot_storage_expiration_in := NEW.hot_storage_expiration
+  );
+  RETURN NEW;
 
-    value_in := NEW.value
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION update_epi_rawdata_metadata_from_trig()
+RETURNS TRIGGER AS $$
+BEGIN
+  PERFORM update_epi_rawdata_metadata(
+    rawdata_metadata_id_in := NEW.rawdata_metadata_id,
+    flightlines_id_in := NEW.flightlines_id,
+    capture_time_in := NEW.capture_time,
+    quality_in := NEW.quality,
+    cold_storage_in := NEW.cold_storage,
+    hot_storage_in := NEW.hot_storage,
+    hot_storage_expiration_in := NEW.hot_storage_expiration
   );
   RETURN NEW;
 
@@ -220,41 +260,77 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_rawdata_metadata_id(session_name_in text, start_time_in time, end_time_in time, line_count_in float, session_notes_in text,
-  make_in INSTRUMENT_MAKE, model_in INSTRUMENT_MODEL, serial_number_in TEXT, type_in INSTRUMENT_TYPE,
-  rawdata_quality_in RAWDATA_QUALITY, cold_storage_in TEXT, hot_storage_in TEXT, hot_storage_expiration_in DATE,
-  variable_name_in text, variable_type_in text, units_name_in text, units_type_in text, units_description_in text, value_in float) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_epi_rawdata_metadata_id(flightlines_id_in UUID, capture_time_in TIME, quality_in RAWDATA_QUALITY, cold_storage_in TEXT, hot_storage_in TEXT, hot_storage_expiration_in DATE) RETURNS UUID AS $$
 DECLARE
   rid UUID;
-  sid UUID;
-  iid UUID;
-  rdid UUID;
-  vid UUID;
-  uid UUID;
 BEGIN
-  SELECT get_sessions_id(session_name_in, start_time_in, end_time_in, line_count_in, session_notes_in) INTO sid;
-  SELECT get_instruments_id(make_in, model_in, serial_number_in, type_in) INTO iid;
-  SELECT get_rawdata_id(rawdata_quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in) INTO rdid;
-  SELECT get_variables_id(variable_name_in, variable_type_in) INTO vid;
-  SELECT get_units_id(units_name_in, units_type_in, units_description_in) INTO uid;
   SELECT
     rawdata_metadata_id INTO rid
   FROM
     rawdata_metadata r
   WHERE
-    sessions_id = sid AND
-    instruments_id = iid AND
-    rawdata_id = rdid AND
-    variables_id = vid AND
-    units_id = uid AND
-    value = value_in;
+      flightlines_id = flightlines_id_in AND
+      capture_time = capture_time_in;
 
   IF (rid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown rawdata_metadata: session_name="%" start_time="%" end_time="%" line_count="%" session_notes="%"
-    serial_number="%" rawdata_quality="%" cold_storage="%" hot_storage="%" hot_storage_expiration="%" variable_name="%" variable_type="%" units_name="%"
-    units_type="%" units_description="%" value="%"', session_name_in, start_time_in, end_time_in, line_count_in,
-    session_notes_in, serial_number_in, rawdata_quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in, variable_name_in, variable_type_in,
-    units_name_in, units_type_in, units_description_in, value_in;
+    RAISE EXCEPTION 'Unknown rawdata_metadata: flightlines_id="%" capture_time="%" quality="%" cold_storage="%" hot_storage="%" hot_storage_expiration="%"', flightlines_id_in, capture_time_in, quality_in, cold_storage_in, hot_storage_in, hot_storage_expiration_in;
+  END IF;
+
+  RETURN rid;
+END ;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_lightweight_rawdata_metadata_id(flightlines_id UUID, capture_time_in TIME) RETURNS UUID AS $$
+DECLARE
+  rid UUID;
+BEGIN
+  SELECT
+    rawdata_metadata_id INTO rid
+  FROM
+    rawdata_metadata r
+  WHERE
+    flightlines_id = flightlines_id_in AND
+    capture_time = capture_time_in;
+
+  IF (rid IS NULL) THEN
+    RAISE EXCEPTION 'Unknown rawdata_metadata: flightlines_id="%" capture_time="%"', flightlines_id_in, capture_time_in;
+  END IF;
+
+  RETURN rid;
+END ;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_rawdata_metadata_id(flight_date_in DATE,
+pilot_in TEXT,
+operator_in TEXT,
+liftoff_time_in TIME,
+session_name_in TEXT,
+line_count_in FLOAT,
+line_number_in FLOAT,
+capture_time_in TIME,
+quality_in RAWDATA_QUALITY,
+cold_storage_in TEXT,
+hot_storage_in TEXT,
+hot_storage_expiration_in DATE) RETURNS UUID AS $$
+DECLARE
+  rid UUID;
+  fid UUID;
+  sid UUID;
+  fl_id UUID;
+BEGIN
+  SELECT get_flights_id(flight_date_in, pilot_in, operator_in, liftoff_time_in) INTO fid;
+  SELECT get_lightweight_sessions_id(fid,session_name_in) INTO sid;
+  SELECT get_epi_flightlines_id(sid, line_number_in) INTO fl_id;
+  SELECT
+    rawdata_metadata_id INTO rid
+  FROM
+    rawdata_metadata r
+  WHERE
+    flightlines_id = fl_id AND
+    capture_time = capture_time_in;
+
+  IF (rid IS NULL) THEN
+    RAISE EXCEPTION 'Unknown rawdata_metadata: flight_date="%" pilot="%" operator="%" liftoff_time="%" session_name="%" line_count="%" line_number="%" capture_time="%"', flight_date_in, pilot_in, operator_in, liftoff_time_in, session_name_in, line_count_in, line_number_in, capture_time_in;
   END IF;
 
   RETURN rid;
@@ -267,7 +343,17 @@ CREATE TRIGGER rawdata_metadata_insert_trig
   rawdata_metadata_view FOR EACH ROW
   EXECUTE PROCEDURE insert_rawdata_metadata_from_trig();
 
+CREATE TRIGGER rawdata_metadata_epi_insert_trig
+  INSTEAD OF INSERT ON
+  rawdata_metadata_view FOR EACH ROW
+  EXECUTE PROCEDURE insert_epi_rawdata_metadata_from_trig();
+
 CREATE TRIGGER rawdata_metadata_update_trig
   INSTEAD OF UPDATE ON
   rawdata_metadata_view FOR EACH ROW
   EXECUTE PROCEDURE update_rawdata_metadata_from_trig();
+
+CREATE TRIGGER rawdata_metadata_epi_update_trig
+  INSTEAD OF UPDATE ON
+  rawdata_metadata_view FOR EACH ROW
+  EXECUTE PROCEDURE update_epi_rawdata_metadata_from_trig();

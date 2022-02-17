@@ -1,2 +1,2 @@
-session_name,start_time,end_time,line_count,session_notes
-TEXT,TIME,TIME,FLOAT,TEXT (can be empty)
+flight_date,pilot,operator,liftoff_time,session_name,start_time,end_time,line_count,session_notes
+DATE,TEXT,TEXT,TIME,TEXT,TIME,TIME,FLOAT,TEXT (can be empty)

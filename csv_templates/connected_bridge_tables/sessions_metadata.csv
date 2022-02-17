@@ -1,2 +1,2 @@
-session_name,start_time,end_time,line_count,session_notes,variable_name,variable_type,units_name,units_type,units_description,value
-TEXT,TIME,TIME,FLOAT,TEXT (can be empty),UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,TEXT (can be empty),FLOAT
+flight_date,pilot,operator,liftoff_time,session_name,start_time,end_time,line_count,session_notes,variable_name,variable_type,units_name,units_type,units_description,value
+DATE,TEXT,TEXT,TIME,TEXT,TIME,TIME,FLOAT,TEXT (can be empty),UNIQUE TEXT,TEXT (can be empty),TEXT,TEXT,TEXT (can be empty),FLOAT

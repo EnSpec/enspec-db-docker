@@ -8,6 +8,8 @@ CREATE TABLE variables (
 );
 CREATE INDEX variables_source_id_idx ON variables(source_id);
 
+ALTER TABLE variables ADD CONSTRAINT uniq_variables_row UNIQUE (variable_name);
+
 -- VIEW
 CREATE OR REPLACE VIEW variables_view AS
   SELECT
@@ -96,30 +98,40 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_variables_id(variable_name_in text, variable_type_in text) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_variables_id(variable_name_in text, variable_type_in TEXT) RETURNS UUID AS $$
 DECLARE
   vid UUID;
 BEGIN
-  IF variable_type_in IS NULL THEN
-    SELECT
-      variables_id INTO vid
-    FROM
-      variables v
-    WHERE
-      variable_name = variable_name_in AND
-      variable_type IS NULL;
-  ELSE
-    SELECT
-      variables_id INTO vid
-    FROM
-      variables v
-    WHERE
-      variable_name = variable_name_in AND
-      variable_type = variable_type_in;
-  END IF;
+  SELECT
+    variables_id INTO vid
+  FROM
+    variables v
+  WHERE
+    variable_name = variable_name_in;
+
 
   IF (vid IS NULL) THEN
     RAISE EXCEPTION 'Unknown variables: variable_name="%" variable_type="%"', variable_name_in, variable_type_in;
+  END IF;
+
+  RETURN vid;
+END ;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_lightweight_variables_id(variable_name_in text) RETURNS UUID AS $$
+DECLARE
+  vid UUID;
+BEGIN
+  SELECT
+    variables_id INTO vid
+  FROM
+    variables v
+  WHERE
+    variable_name = variable_name_in;
+
+
+  IF (vid IS NULL) THEN
+    RAISE EXCEPTION 'Unknown variables: variable_name="%"', variable_name_in;
   END IF;
 
   RETURN vid;

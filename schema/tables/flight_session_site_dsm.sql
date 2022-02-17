@@ -94,7 +94,7 @@ BEGIN
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
   SELECT get_flights_id(flights_date, pilot, operator, flight_hours, flight_liftoff_time, flight_landing_time, flight_tachometer_start, flight_tachometer_end, flight_hobbs_start, flight_hobbs_end, flight_notes) INTO flid;
-  SELECT get_sessions_id(session_name, session_start_time, session_end_time, line_count, session_notes) INTO s_id;
+  SELECT get_lightweight_sessions_id(flid, session_name) INTO s_id;
   SELECT get_study_sites_id(site_name, region, site_poly_kml) INTO ss_id;
   SELECT get_dsm_id(dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata) INTO d_id;
 
@@ -143,7 +143,7 @@ DECLARE
   d_id UUID;
 BEGIN
   SELECT get_flights_id(flights_date_in, pilot_in, operator_in, flight_hours_in, flight_liftoff_time_in, flight_landing_time_in, flight_tachometer_start_in, flight_tachometer_end_in, flight_hobbs_start_in, flight_hobbs_end_in, flight_notes_in) INTO flid;
-  SELECT get_sessions_id(session_name_in, session_start_time_in, session_end_time_in, line_count_in, session_notes_in) INTO s_id;
+  SELECT get_lightweight_sessions_id(flid, session_name_in) INTO s_id;
   SELECT get_study_sites_id(site_name_in, region_in, site_poly_kml_in) INTO ss_id;
   SELECT get_dsm_id(dsm_name_in, extent_poly_kml_in, epsg_in, vdatum_in, dsm_file_in, dsm_metadata_in) INTO d_id;
   UPDATE flight_session_site_dsm SET (
@@ -272,7 +272,7 @@ DECLARE
   ss_id UUID;
 BEGIN
   SELECT get_flights_id(flights_date, pilot, operator, flight_hours, flight_liftoff_time, flight_landing_time, flight_tachometer_start, flight_tachometer_end, flight_hobbs_start, flight_hobbs_end, flight_notes) INTO flid;
-  SELECT get_sessions_id(session_name, session_start_time, session_end_time, line_count, session_notes) INTO s_id;
+  SELECT get_lightweight_sessions_id(flid, session_name) INTO s_id;
   SELECT get_study_sites_id(site_name, region, site_poly_kml) INTO ss_id;
   SELECT get_dsm_id(dsm_name, extent_poly_kml, epsg, vdatum, dsm_file, dsm_metadata) INTO d_id;
   SELECT

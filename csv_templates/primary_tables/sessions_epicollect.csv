@@ -1,0 +1,2 @@
+flights_id,session_name,start_time,end_time,line_count,session_notes
+UUID,TEXT,TIME,TIME,FLOAT,TEXT (can be empty)

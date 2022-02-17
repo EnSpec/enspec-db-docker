@@ -8,11 +8,12 @@ CREATE TABLE units (
   units_id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   source_id UUID REFERENCES source NOT NULL,
   units_name TEXT NOT NULL,
-  units_type TEXT NOT NULL,
-  units_description TEXT,
-  UNIQUE(units_name, units_type)
+  units_type TEXT,
+  units_description TEXT
 );
 CREATE INDEX units_source_id_idx ON units(source_id);
+
+ALTER TABLE units ADD CONSTRAINT uniq_units_row UNIQUE (units_name);
 
 -- VIEW
 CREATE OR REPLACE VIEW units_view AS
@@ -111,28 +112,36 @@ CREATE OR REPLACE FUNCTION get_units_id(units_name_in text, units_type_in text, 
 DECLARE
   uid UUID;
 BEGIN
-  IF units_description_in IS NULL THEN
-    SELECT
-      units_id INTO uid
-    FROM
-      units u
-    WHERE
-      units_name = units_name_in AND
-      units_type = units_type_in AND
-      units_description IS NULL;
-  ELSE
-    SELECT
-      units_id INTO uid
-    FROM
-      units u
-    WHERE
-      units_name = units_name_in AND
-      units_type = units_type_in AND
-      units_description = units_description_in;
-  END IF;
+  SELECT
+    units_id INTO uid
+  FROM
+    units u
+  WHERE
+    units_name = units_name_in;
+
 
   IF (uid IS NULL) THEN
     RAISE EXCEPTION 'Unknown units: units_name="%" units_type="%" units_description="%"', units_name_in, units_type_in, units_description_in;
+  END IF;
+
+  RETURN uid;
+END ;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_lightweight_units_id(units_name_in text) RETURNS UUID AS $$
+DECLARE
+  uid UUID;
+BEGIN
+  SELECT
+    units_id INTO uid
+  FROM
+    units u
+  WHERE
+    units_name = units_name_in;
+
+
+  IF (uid IS NULL) THEN
+    RAISE EXCEPTION 'Unknown units: units_name="%"', units_name_in;
   END IF;
 
   RETURN uid;

@@ -10,6 +10,8 @@ CREATE INDEX flight_installation_source_id_idx ON flight_installation(source_id)
 CREATE INDEX flight_installation_flights_id_idx ON flight_installation(flights_id);
 CREATE INDEX flight_installation_installations_id_idx ON flight_installation(installations_id);
 
+ALTER TABLE flight_installation ADD CONSTRAINT uniq_flight_instl_row UNIQUE(flights_id, installations_id);
+
 -- VIEW
 CREATE OR REPLACE VIEW flight_installation_view AS
   SELECT
@@ -44,10 +46,10 @@ CREATE OR REPLACE FUNCTION insert_flight_installation (
   flight_hours FLOAT,
   liftoff_time TIME,
   landing_time TIME,
-  tachometer_start TIME,
-  tachometer_end TIME,
-  hobbs_start TIME,
-  hobbs_end TIME,
+  tachometer_start FLOAT,
+  tachometer_end FLOAT,
+  hobbs_start FLOAT,
+  hobbs_end FLOAT,
   flight_notes TEXT,
   install_date DATE,
   removal_date DATE,
@@ -64,7 +66,7 @@ BEGIN
     SELECT uuid_generate_v4() INTO flight_installation_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
-  SELECT get_flights_id(flight_date, pilot, operator, flight_hours, liftoff_time, landing_time, tachometer_start, tachometer_end, hobbs_start, hobbs_end, flight_notes) INTO flid;
+  SELECT get_flights_id(flight_date, pilot, operator, liftoff_time) INTO flid;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO iid;
 
   INSERT INTO flight_installation (
@@ -86,10 +88,10 @@ CREATE OR REPLACE FUNCTION update_flight_installation (
   flight_hours_in FLOAT,
   liftoff_time_in TIME,
   landing_time_in TIME,
-  tachometer_start_in TIME,
-  tachometer_end_in TIME,
-  hobbs_start_in TIME,
-  hobbs_end_in TIME,
+  tachometer_start_in FLOAT,
+  tachometer_end_in FLOAT,
+  hobbs_start_in FLOAT,
+  hobbs_end_in FLOAT,
   flight_notes_in TEXT,
   install_date_in DATE,
   removal_date_in DATE,
@@ -98,7 +100,7 @@ DECLARE
  flid UUID;
  iid UUID;
 BEGIN
-  SELECT get_flights_id(flight_date_in, pilot_in, operator_in, flight_hours_in, liftoff_time_in, landing_time_in, tachometer_start_in, tachometer_end_in, hobbs_start_in, hobbs_end_in, flight_notes_in) INTO flid;
+  SELECT get_flights_id(flight_date_in, pilot_in, operator_in, liftoff_time_in) INTO flid;
   SELECT get_installations_id(install_date_in, removal_date_in, dir_location_in) INTO iid;
   UPDATE flight_installation SET (
     flights_id, installations_id
@@ -170,13 +172,13 @@ $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
 CREATE OR REPLACE FUNCTION get_flight_installation_id(
-  flight_date date, pilot text, operator text, flight_hours float, liftoff_time time, landing_time time, tachometer_start TIME, tachometer_end TIME, hobbs_start TIME, hobbs_end TIME, flight_notes text, install_date date, removal_date date, dir_location text) RETURNS UUID AS $$
+  flight_date date, pilot text, operator text, flight_hours float, liftoff_time time, landing_time time, tachometer_start FLOAT, tachometer_end FLOAT, hobbs_start FLOAT, hobbs_end FLOAT, flight_notes text, install_date date, removal_date date, dir_location text) RETURNS UUID AS $$
 DECLARE
   fid UUID;
   flid UUID;
   iid UUID;
 BEGIN
-  SELECT get_flights_id(flight_date, pilot, operator, flight_hours, liftoff_time, landing_time, tachometer_start, tachometer_end, hobbs_start, hobbs_end, flight_notes) INTO flid;
+  SELECT get_flights_id(flight_date, pilot, operator, liftoff_time) INTO flid;
   SELECT get_installations_id(install_date, removal_date, dir_location) INTO iid;
   SELECT
     flight_installation_id INTO fid

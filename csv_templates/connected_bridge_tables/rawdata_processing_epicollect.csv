@@ -1,0 +1,2 @@
+flightlines_id,capture_time,quality,cold_storage,hot_storage,hot_storage_expiration,system,software_version,job_type,input_dir
+UUID,TIME,'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE,TEXT,TEXT,TEXT,TEXT

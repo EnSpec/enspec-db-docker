@@ -9,13 +9,15 @@ CREATE TABLE flights (
   flight_hours FLOAT NOT NULL,
   liftoff_time TIME NOT NULL,
   landing_time TIME NOT NULL,
-  tachometer_start TIME NOT NULL,
-  tachometer_end TIME NOT NULL,
-  hobbs_start TIME NOT NULL,
-  hobbs_end TIME NOT NULL,
+  tachometer_start FLOAT NOT NULL,
+  tachometer_end FLOAT NOT NULL,
+  hobbs_start FLOAT NOT NULL,
+  hobbs_end FLOAT NOT NULL,
   flight_notes TEXT
 );
 CREATE INDEX flights_source_id_idx ON flights(source_id);
+
+ALTER TABLE flights ADD CONSTRAINT uniq_flight_row UNIQUE(flight_date, pilot, operator, liftoff_time);
 
 -- VIEW
 CREATE OR REPLACE VIEW flights_view AS
@@ -47,10 +49,10 @@ CREATE OR REPLACE FUNCTION insert_flights (
   flight_hours FLOAT,
   liftoff_time TIME,
   landing_time TIME,
-  tachometer_start TIME,
-  tachometer_end TIME,
-  hobbs_start TIME,
-  hobbs_end TIME,
+  tachometer_start FLOAT,
+  tachometer_end FLOAT,
+  hobbs_start FLOAT,
+  hobbs_end FLOAT,
   flight_notes TEXT,
 
   source_name TEXT) RETURNS void AS $$
@@ -82,10 +84,10 @@ CREATE OR REPLACE FUNCTION update_flights (
   flight_hours_in FLOAT,
   liftoff_time_in TIME,
   landing_time_in TIME,
-  tachometer_start_in TIME,
-  tachometer_end_in TIME,
-  hobbs_start_in TIME,
-  hobbs_end_in TIME,
+  tachometer_start_in FLOAT,
+  tachometer_end_in FLOAT,
+  hobbs_start_in FLOAT,
+  hobbs_end_in FLOAT,
   flight_notes_in TEXT) RETURNS void AS $$
 
 BEGIN
@@ -154,7 +156,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- FUNCTION GETTER
-CREATE OR REPLACE FUNCTION get_flights_id(flights_date_in date, pilot_in text, operator_in text, flight_hours_in float, liftoff_time_in time, landing_time_in time, tachometer_start_in TIME, tachometer_end_in TIME, hobbs_start_in TIME, hobbs_end_in TIME, flight_notes_in text) RETURNS UUID AS $$
+CREATE OR REPLACE FUNCTION get_flights_id(flights_date_in date, pilot_in text, operator_in text, liftoff_time_in time) RETURNS UUID AS $$
 DECLARE
   fid UUID;
 BEGIN
@@ -167,16 +169,10 @@ BEGIN
     flights_date = flights_date_in AND
     pilot = pilot_in AND
     operator = operator_in AND
-    flight_hours = flight_hours_in AND
-    liftoff_time = liftoff_time_in AND
-    landing_time = landing_time_in AND
-    tachometer_start = tachometer_start_in AND
-    tachometer_end = tachometer_end_in AND
-    hobbs_start = hobbs_start_in AND
-    hobbs_end = hobbs_end_in;
+    liftoff_time = liftoff_time_in;
 
   IF (fid IS NULL) THEN
-    RAISE EXCEPTION 'Unknown flights: flight_date="%" pilot="%" operator="%" flight_hours="%" liftoff_time="%" landing_time="%" tachometer_start="%" tachometer_end="%" hobbs_start="%" hobbs_end="%" flight_notes="%"', flight_date, pilot_in, operator_in, flight_hours_in, liftoff_time_in, landing_time_in, tachometer_start_in, tachometer_end_in, hobbs_start_in, hobbs_end_in, flight_notes_in;
+    RAISE EXCEPTION 'Unknown flights: flight_date="%" pilot="%" operator="%" liftoff_time="%"', flight_date, pilot_in, operator_in, liftoff_time_in;
   END IF;
 
   RETURN fid;

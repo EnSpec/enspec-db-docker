@@ -10,6 +10,8 @@ CREATE INDEX AnalysisPlot_StudySites_source_id_idx ON AnalysisPlot_StudySites(so
 CREATE INDEX AnalysisPlot_StudySites_analysis_plot_id_idx ON AnalysisPlot_StudySites(analysis_plot_id);
 CREATE INDEX AnalysisPlot_StudySites_study_sites_id_idx ON AnalysisPlot_StudySites(study_sites_id);
 
+ALTER TABLE AnalysisPlot_StudySites ADD CONSTRAINT uniq_ap_ss_row UNIQUE(analysis_plot_id, study_sites_id);
+
 -- VIEW
 CREATE OR REPLACE VIEW AnalysisPlot_StudySites_view AS
   SELECT

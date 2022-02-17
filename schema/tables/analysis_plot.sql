@@ -14,6 +14,7 @@ CREATE TABLE analysis_plot (
   plot_notes TEXT
 );
 CREATE INDEX analysis_plot_source_id_idx ON analysis_plot(source_id);
+ALTER TABLE analysis_plot ADD CONSTRAINT uniq_ap_row UNIQUE(plot_name, plot_type, physiognomic_type, plot_description, veg_coverage, plot_sketch_file, datasheet_scan_file, plot_geom);
 
 -- VIEW
 CREATE OR REPLACE VIEW analysis_plot_view AS

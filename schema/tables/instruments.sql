@@ -141,6 +141,47 @@ BEGIN
 END ;
 $$ LANGUAGE plpgsql;
 
+CREATE OR REPLACE FUNCTION get_instruments_id(make_in INSTRUMENT_MAKE, model_in INSTRUMENT_MODEL) RETURNS UUID AS $$
+DECLARE
+  iid UUID;
+BEGIN
+
+  SELECT
+    instruments_id INTO iid
+  FROM
+    instruments i
+  WHERE
+    make = make_in AND
+    model = model_in;
+
+  IF (iid IS NULL) THEN
+    RAISE EXCEPTION 'Unknown instruments: make="%" model="%"', make_in, model_in;
+  END IF;
+
+  RETURN iid;
+END ;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_lightweight_instruments_id(serial_number_in TEXT) RETURNS UUID AS $$
+DECLARE
+  iid UUID;
+BEGIN
+
+  SELECT
+    instruments_id INTO iid
+  FROM
+    instruments i
+  WHERE
+    serial_number = serial_number_in;
+
+  IF (iid IS NULL) THEN
+    RAISE EXCEPTION 'Unknown instruments: serial_number="%"', serial_number_in;
+  END IF;
+
+  RETURN iid;
+END ;
+$$ LANGUAGE plpgsql;
+
 -- RULES
 CREATE TRIGGER instruments_insert_trig
   INSTEAD OF INSERT ON

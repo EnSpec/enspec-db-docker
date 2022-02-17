@@ -1,0 +1,2 @@
+sessions_id,start_time,end_time,media_files,line_notes,line_number,line_index
+UUID,TIME (can be empty),TIME (can be empty),TEXT (can be empty),TEXT (can be empty),INT,INT (can be empty)

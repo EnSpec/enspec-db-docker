@@ -1,2 +1,0 @@
-fl_start_time,fl_end_time,fl_media_files,fl_line_notes,rd_quality,rd_cold_storage,rd_hot_storage,rd_hot_storage_expiration
-TIME,TIME,TEXT,TEXT (can be empty),'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE

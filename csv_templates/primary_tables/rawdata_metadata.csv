@@ -1,0 +1,2 @@
+flight_date,pilot,operator,liftoff_time,session_name,line_number,capture_time,quality, cold_storage, hot_storage, hot_storage_expiration
+DATE,TEXT,TEXT,TIME,TEXT,FLOAT,TIME,'Green' or 'Yellow' or 'Red', TEXT (can be empty), TEXT, DATE (can be empty)

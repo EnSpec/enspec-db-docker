@@ -1,2 +1,2 @@
-quality,cold_storage,hot_storage,hot_storage_expiration,system,software_version,job_type,input_dir,proc_params
-'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE,TEXT,TEXT,TEXT,TEXT,TEXT
+flight_date,pilot,operator,liftoff_time,session_name,line_number,capture_time,quality,cold_storage,hot_storage,hot_storage_expiration,system,software_version,job_type,input_dir
+DATE,TEXT,TEXT,TIME,TEXT,FLOAT,TIME,'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE,TEXT,TEXT,TEXT,TEXT

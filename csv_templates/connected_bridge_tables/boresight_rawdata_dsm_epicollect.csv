@@ -1,0 +1,2 @@
+calculation_method,roll_offset,pitch_offset,heading_offset,rmse,gcp_file,flightlines_id,capture_time,rawdata_quality,rd_cold_storage,rd_hot_storage,rd_hot_storage_expiration,dsm_name,extent_poly_kml,epsg,vdatum,dsm_file,dsm_metadata
+Text,Float,Float,Float,Float,Text,UUID,TIME,'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE,Text,"Text KML for example: <Point><coordinates>-122.082203542568294,37.422289901402507,0</coordinates></Point>",Float,Text,Text,Text (can be empty)

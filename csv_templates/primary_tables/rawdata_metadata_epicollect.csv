@@ -1,0 +1,2 @@
+flightlines_id,capture_time,quality, cold_storage, hot_storage, hot_storage_expiration
+UUID,TIME,'Green' or 'Yellow' or 'Red', TEXT (can be empty), TEXT, DATE (can be empty)

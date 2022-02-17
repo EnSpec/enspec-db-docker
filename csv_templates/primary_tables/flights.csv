@@ -1,2 +1,2 @@
 flight_date,pilot,operator,flight_hours,liftoff_time,landing_time,tachometer_start,tachometer_end,hobbs_start,hobbs_end,flight_notes
-DATE,TEXT,TEXT,FLOAT,TIME,TIME,TIME,TIME,TIME,TIME,TEXT (can be empty)
+DATE,TEXT,TEXT,FLOAT,TIME,TIME,FLOAT,FLOAT,FLOAT,FLOAT,TEXT (can be empty)

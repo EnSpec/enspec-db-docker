@@ -1,0 +1,2 @@
+flightlines_id,capture_time,rawdata_quality,rd_cold_storage,rd_hot_storage,rd_hot_storage_expiration,image_dir,image_dir_owner,image_exists,processing_date,expiration_date,expiration_type
+UUID,TIME,'Green' or 'Yellow' or 'Red',TEXT,TEXT,DATE,TEXT,TEXT,BOOL,DATE,DATE,'reprocess' or 'delete' or 'glacier storage'

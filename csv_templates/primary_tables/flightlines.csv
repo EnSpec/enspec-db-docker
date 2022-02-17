@@ -1,2 +1,2 @@
-start_time,end_time,media_files,line_notes,line_number,line_index
-TIME,TIME,TEXT,TEXT (can be empty),INT,INT
+flight_date,pilot,operator,liftoff_time,session_name,start_time,end_time,media_files,line_notes,line_number,line_index
+DATE,TEXT,TEXT,TIME,TEXT,TIME (can be empty),TIME (can be empty),TEXT (can be empty),TEXT (can be empty),INT,INT (can be empty)

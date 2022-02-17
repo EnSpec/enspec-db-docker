@@ -12,6 +12,8 @@ CREATE TABLE boresight_offsets (
 );
 CREATE INDEX boresight_offsets_source_id_idx ON boresight_offsets(source_id);
 
+ALTER TABLE boresight_offsets ADD CONSTRAINT uniq_bo_row UNIQUE(calculation_method, roll_offset, pitch_offset, heading_offset, rmse, gcp_file);
+
 -- VIEW
 CREATE OR REPLACE VIEW boresight_offsets_view AS
   SELECT
