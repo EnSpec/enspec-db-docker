@@ -7,7 +7,9 @@ The white-grey tables are primary while the yellow tables are bridge tables conn
 
 ## Start the Docker
 Install docker your device as the first step.
+
 [Instructions for Mac](https://hub.docker.com/editions/community/docker-ce-desktop-mac), [Instructions for Windows](https://docs.docker.com/desktop/windows/install/)
+
 After installing the docker, run the following commands on command prompt from the 'enspec-db-docker' folder:
 ```
 cd docker/enspec-db-docker
