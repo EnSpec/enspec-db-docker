@@ -1,2 +1,2 @@
-flights_id,session_name,start_time,end_time,line_count,session_notes
-UUID,TEXT,TIME,TIME,FLOAT,TEXT (can be empty)
+flights_id,session_name,start_time,end_time,line_count,session_notes,target_groundspeed_kmh,target_resolution,target_altitude_agl,sidelap
+UUID,TEXT,TIME,TIME,FLOAT,TEXT (can be empty),FLOAT,FLOAT,FLOAT,FLOAT

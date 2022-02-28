@@ -1,2 +1,2 @@
-flightlines_id,capture_time,quality, cold_storage, hot_storage, hot_storage_expiration
-UUID,TIME,'Green' or 'Yellow' or 'Red', TEXT (can be empty), TEXT, DATE (can be empty)
+flightlines_id,capture_time,quality, binning, frameperiod_us, integration_us, cold_storage, file, hot_storage_expiration,
+UUID,TIME,'Green' or 'Yellow' or 'Red', FLOAT, FLOAT, FLOAT, TEXT (can be empty), TEXT, DATE (can be empty)

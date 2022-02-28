@@ -30,7 +30,7 @@ CREATE OR REPLACE VIEW sessions_view AS
     sc.name AS source_name
   FROM
     sessions s
-LEFT JOIN source sc ON s.source_id = sc.source_id 
+LEFT JOIN source sc ON s.source_id = sc.source_id
 LEFT JOIN flights f ON s.flights_id = f.flights_id;
 --get_flight_line_count(s.sessions_id) as line_count,
 
@@ -87,6 +87,64 @@ BEGIN
     SELECT uuid_generate_v4() INTO sessions_id;
   END IF;
   SELECT get_source_id(source_name) INTO source_id;
+
+  INSERT INTO sessions (
+    sessions_id, flights_id, session_name, start_time, end_time, line_count, session_notes, source_id
+  ) VALUES (
+    sessions_id, flights_id, session_name, start_time, end_time, line_count, session_notes, source_id
+  );
+
+EXCEPTION WHEN raise_exception THEN
+  RAISE;
+END;
+$$ LANGUAGE plpgsql;
+
+-- for Epicollect data entry which also contain metadata to insert in sessions_metadata table
+CREATE OR REPLACE FUNCTION insert_epi_sessions_and_metadata (
+  sessions_id UUID,
+  flights_id UUID,
+  session_name TEXT,
+  start_time TIME,
+  end_time TIME,
+  line_count FLOAT,
+  session_notes TEXT,
+  target_groundspeed_kmh FLOAT,
+  target_resolution FLOAT,
+  target_altitude_agl FLOAT,
+  sidelap FLOAT,
+  source_name TEXT) RETURNS void AS $$
+DECLARE
+  source_id UUID;
+BEGIN
+
+  IF( sessions_id IS NULL ) THEN
+    SELECT uuid_generate_v4() INTO sessions_id;
+  END IF;
+  SELECT get_source_id(source_name) INTO source_id;
+
+  INSERT INTO sessions_metadata (
+    sessions_id, variables_id, units_id, value
+  ) VALUES (
+    sessions_id, get_lightweight_variables_id("target_groundspeed"), get_lightweight_units_id("kmh"), target_groundspeed_kmh
+  );
+
+  INSERT INTO sessions_metadata (
+    sessions_id, variables_id, units_id, value
+  ) VALUES (
+    sessions_id, get_lightweight_variables_id("target_resolution"), get_lightweight_units_id("None"), target_resolution
+  );
+
+  INSERT INTO sessions_metadata (
+    sessions_id, variables_id, units_id, value
+  ) VALUES (
+    sessions_id, get_lightweight_variables_id("target_altitude"), get_lightweight_units_id("agl"), target_altitude_agl
+  );
+
+  INSERT INTO sessions_metadata (
+    sessions_id, variables_id, units_id, value
+  ) VALUES (
+    sessions_id, get_lightweight_variables_id("sidelap"), get_lightweight_units_id("None"), sidelap
+  );
 
   INSERT INTO sessions (
     sessions_id, flights_id, session_name, start_time, end_time, line_count, session_notes, source_id

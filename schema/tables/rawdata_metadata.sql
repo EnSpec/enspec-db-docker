@@ -79,28 +79,59 @@ EXCEPTION WHEN raise_exception THEN
 END;
 $$ LANGUAGE plpgsql;
 
+-- function takes in epicollect data
 CREATE OR REPLACE FUNCTION insert_epi_rawdata_metadata (
-  rawdata_metadata_id UUID,
-  flightlines_id UUID,
+  image_id UUID,
+  line_id UUID,
+  sensor_make TEXT,
+  sensor_model TEXT,
+  binning FLOAT,
+  frameperiod_us FLOAT,
+  integration_us FLOAT,
   capture_time TIME,
   quality RAWDATA_QUALITY,
   cold_storage TEXT,
-  hot_storage TEXT,
+  file TEXT,
   hot_storage_expiration DATE,
   source_name TEXT) RETURNS void AS $$
 DECLARE
   source_id UUID;
+  iid UUID;
+  vid UUID;
+  uid UUID;
 BEGIN
 
-  IF( rawdata_metadata_id IS NULL ) THEN
-    SELECT uuid_generate_v4() INTO rawdata_metadata_id;
-  END IF;
+  -- IF( rawdata_capture_settings_id IS NULL ) THEN
+  --   SELECT uuid_generate_v4() INTO rawdata_capture_settings_id;
+  -- END IF;
   SELECT get_source_id(source_name) INTO source_id;
+
+  SELECT get_instruments_id(make, sensor) INTO iid;
+  SELECT get_lightweight_units_id("us") INTO uid;
+
+
+  INSERT INTO rawdata_capture_settings (
+    rawdata_metadata_id, variables_id, units_id, value, instruments_id
+  ) VALUES(
+    image_id, get_lightweight_variables_id("integration"), uid, integration_us, iid
+  );
+
+  INSERT INTO rawdata_capture_settings (
+    rawdata_metadata_id, variables_id, units_id, value, instruments_id
+  ) VALUES(
+    image_id, get_lightweight_variables_id("frameperiod"), uid, frameperiod_us, iid
+  );
+
+  INSERT INTO rawdata_capture_settings (
+    rawdata_metadata_id, variables_id, units_id, value, instruments_id
+  ) VALUES(
+    image_id, get_lightweight_variables_id("binning"), get_lightweight_units_id("None"), binning, iid
+  );
 
   INSERT INTO rawdata_metadata (
     rawdata_metadata_id, flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration, source_id
   ) VALUES (
-    rawdata_metadata_id, flightlines_id, capture_time, quality, cold_storage, hot_storage, hot_storage_expiration, source_id
+    image_id, line_id, capture_time, quality, cold_storage, file, hot_storage_expiration, source_id
   );
 
 EXCEPTION WHEN raise_exception THEN
